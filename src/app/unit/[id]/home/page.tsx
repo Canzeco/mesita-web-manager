@@ -23,7 +23,7 @@ import { PlacePreview } from "@/components/manager/PlacePreview";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { getUnitOverview } from "@/lib/api/unit";
 import { FiscalBadge } from "@/components/shared";
-import { cn } from "@/lib/utils";
+import { cn, errMsg } from "@/lib/utils";
 
 // /unit/<id>/home — the dashboard root. Empty-state CTA if the operator
 // has no venues yet, otherwise: overview + jump-offs to Place / Promos /
@@ -52,8 +52,7 @@ export default async function ManagerHomePage({
   try {
     overview = await getUnitOverview(supabase, requestedUnit, 0);
   } catch (err) {
-    overviewError =
-      err instanceof Error ? err.message : "Could not load your venues.";
+    overviewError = errMsg(err, "Could not load your venues.");
   }
 
   if (overviewError) {
