@@ -32,7 +32,7 @@ import {
   type UpdateVenueInput,
 } from "@/lib/api/venues";
 import { Field } from "@/components/shared";
-import { cn } from "@/lib/utils";
+import { cn, errMsg } from "@/lib/utils";
 import { isEmail } from "@/lib/validators";
 import {
   INPUT_CLASS as INPUT,
@@ -232,7 +232,7 @@ export function EditVenueForm({ venue }: { venue: MyVenue }) {
         router.refresh();
         window.setTimeout(() => setSaved(false), SAVED_TOAST_DURATION_MS);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Could not save.");
+        setError(errMsg(err, "Could not save."));
       }
     });
   };
