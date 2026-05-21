@@ -14,6 +14,7 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { getUnitOverview } from "@/lib/api/unit";
 import { apiGetManagerProfile } from "@/lib/api/manager";
 import { AppHeader } from "@/components/auth/AppHeader";
+import { cn } from "@/lib/utils";
 
 // Root behaviour:
 //
@@ -247,10 +248,10 @@ function PriceCard({
 }) {
   return (
     <div
-      className={
-        "bg-card relative rounded-[22px] border p-6 " +
-        (featured ? "border-primary/50 shadow-glow" : "border-border")
-      }
+      className={cn(
+        "bg-card relative rounded-[22px] border p-6",
+        featured ? "border-primary/50 shadow-glow" : "border-border",
+      )}
     >
       {featured && (
         <span className="bg-pink-gradient shadow-glow absolute -top-3 right-5 rounded-full px-3 py-1.5 text-[10px] font-bold tracking-[0.08em] text-white uppercase">
