@@ -188,23 +188,20 @@ function UnitSwitcher({
 }) {
   return (
     <nav className="-mx-1 flex flex-wrap gap-2">
-      {venues.map((v) => {
-        const on = v.id === activeId;
-        return (
-          <Link
-            key={v.id}
-            href={`/unit/${v.id}/home`}
-            className={cn(
-              "rounded-full px-3 py-1.5 text-xs font-semibold transition",
-              on
-                ? "bg-foreground text-background"
-                : "border-border bg-card text-muted-foreground hover:text-foreground border",
-            )}
-          >
-            {v.name}
-          </Link>
-        );
-      })}
+      {venues.map((v) => (
+        <Link
+          key={v.id}
+          href={`/unit/${v.id}/home`}
+          className={cn(
+            "rounded-full px-3 py-1.5 text-xs font-semibold transition",
+            v.id === activeId
+              ? "bg-foreground text-background"
+              : "border-border bg-card text-muted-foreground hover:text-foreground border",
+          )}
+        >
+          {v.name}
+        </Link>
+      ))}
     </nav>
   );
 }
