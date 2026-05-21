@@ -24,21 +24,21 @@ export default async function CreateUnitPage() {
 
   return (
     <div className="bg-background min-h-dvh w-full">
-      <div className="mx-auto flex max-w-2xl flex-col px-4 py-6 md:px-6 md:py-10">
+      <div className="mx-auto flex max-w-[640px] flex-col px-6 py-8 md:py-10">
         <Link
           href="/"
-          className="text-muted-foreground hover:text-foreground mb-6 inline-flex items-center gap-1 self-start text-sm transition"
+          className="text-muted-foreground hover:text-foreground mb-6 inline-flex items-center gap-1.5 self-start text-[13.5px] transition"
         >
           <ChevronLeft className="h-4 w-4" />
           Back to home
         </Link>
         <header className="mb-6">
-          <h1 className="font-display text-2xl font-semibold tracking-tight">
+          <h1 className="font-display text-[30px] font-semibold tracking-[-0.02em]">
             Add a venue
           </h1>
-          <p className="text-muted-foreground mt-1 text-sm">
-            Type the venue&apos;s name. We pull the profile from Google
-            and show its current Mesita status inline.
+          <p className="text-muted-foreground mt-2 max-w-[54ch] text-[14.5px] leading-[1.55]">
+            Type the venue&apos;s name — we pull the profile straight
+            from Google and show its current Mesita status inline.
           </p>
         </header>
         <CreateUnitForm signedInEmail={user.email ?? ""} />

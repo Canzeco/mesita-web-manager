@@ -1,16 +1,19 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ArrowRight, BarChart3, Camera, Search, Star } from "lucide-react";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { getUnitOverview } from "@/lib/api/unit";
 import { apiGetManagerProfile } from "@/lib/api/manager";
 
-// Root smart-redirect.
+// Root behaviour:
 //
-//   no session         → /sign-in
+//   no session         → render the marketing landing (this page)
 //   not onboarded      → /onboard
 //   no venues          → /add (create first venue)
 //   venues exist       → /unit/<first venue id>/home
 //
-// The unit shell takes over from there; this page never renders UI.
+// The unit shell takes over from there for authenticated users; the
+// landing only renders when there is no session.
 
 export const dynamic = "force-dynamic";
 
@@ -19,22 +22,229 @@ export default async function RootPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/sign-in");
 
-  let manager = null;
-  try {
-    manager = await apiGetManagerProfile(supabase);
-  } catch (err) {
-    console.error("[root] manager-profile:", err);
-  }
-  if (!manager?.full_name) redirect("/onboard");
+  if (user) {
+    let manager = null;
+    try {
+      manager = await apiGetManagerProfile(supabase);
+    } catch (err) {
+      console.error("[root] manager-profile:", err);
+    }
+    if (!manager?.full_name) redirect("/onboard");
 
-  let overview = null;
-  try {
-    overview = await getUnitOverview(supabase, null, 0);
-  } catch (err) {
-    console.error("[root] manager-get-overview:", err);
+    let overview = null;
+    try {
+      overview = await getUnitOverview(supabase, null, 0);
+    } catch (err) {
+      console.error("[root] manager-get-overview:", err);
+    }
+    const firstVenueId = overview?.venues?.[0]?.id;
+    redirect(firstVenueId ? `/unit/${firstVenueId}/home` : "/add");
   }
-  const firstVenueId = overview?.venues?.[0]?.id;
-  redirect(firstVenueId ? `/unit/${firstVenueId}/home` : "/add");
+
+  return (
+    <div className="bg-hero min-h-dvh">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5 md:px-10">
+        <Brandmark />
+        <div className="flex items-center gap-4 md:gap-5">
+          <Link
+            href="/sign-in"
+            className="text-foreground text-sm font-semibold transition hover:opacity-80"
+          >
+            Sign in
+          </Link>
+          <Link
+            href="/sign-up"
+            className="bg-pink-gradient shadow-glow inline-flex items-center gap-1.5 rounded-full px-5 py-2.5 text-[13.5px] font-semibold text-white transition hover:brightness-105"
+          >
+            Become a partner
+          </Link>
+        </div>
+      </nav>
+
+      <header className="mx-auto max-w-3xl px-6 pt-8 pb-6 text-center md:pt-12">
+        <p className="text-secondary text-[11px] font-bold tracking-[0.18em] uppercase">
+          Mesita for venues
+        </p>
+        <h1 className="font-display mx-auto mt-4 max-w-[14ch] text-[42px] leading-[1.04] font-semibold tracking-[-0.03em] md:text-[54px]">
+          Turn who walks in into a{" "}
+          <em className="text-primary [font-style:italic]">
+            lever you can pull.
+          </em>
+        </h1>
+        <p className="text-muted-foreground mx-auto mt-5 max-w-[60ch] text-base leading-[1.55] md:text-[17px]">
+          Mesita already lists every venue in your city — auto-built from
+          the open internet. Become a Verified Partner to compete for the
+          guests who actually move the needle, with cashback or instant
+          discounts, priority placement, and one dashboard for all of it.
+        </p>
+        <div className="mt-7 flex flex-wrap justify-center gap-3">
+          <Link
+            href="/sign-up"
+            className="bg-pink-gradient shadow-glow inline-flex h-[52px] items-center gap-2 rounded-full px-7 text-[15px] font-semibold text-white transition hover:brightness-105"
+          >
+            Become a partner
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+          <Link
+            href="/sign-in"
+            className="bg-foreground text-background inline-flex h-[52px] items-center gap-2 rounded-full px-7 text-[15px] font-semibold transition hover:opacity-90"
+          >
+            Sign in
+          </Link>
+        </div>
+        <p className="text-muted-foreground mt-5 flex flex-wrap justify-center gap-2 text-[12.5px]">
+          <span>
+            <b className="text-foreground font-semibold">~10 min</b> setup
+          </span>
+          <span className="opacity-40">·</span>
+          <span>
+            <b className="text-foreground font-semibold">$0</b> until it
+            pays off
+          </span>
+          <span className="opacity-40">·</span>
+          <span>No POS, no hardware, no training</span>
+        </p>
+      </header>
+
+      <section className="mx-auto grid max-w-5xl gap-4 px-6 py-8 sm:grid-cols-2 md:px-10 lg:grid-cols-4">
+        <FeatureCard
+          Icon={Search}
+          title="Get discovered"
+          blurb="Priority placement over the ~100× larger pool of web-listed venues across swipe, map, catalog, and AI search."
+        />
+        <FeatureCard
+          Icon={Star}
+          title="Win magnetic guests"
+          blurb="Set separate rates per tier — Bronze, Silver, Gold, Diamond — to attract the guests who fill your room."
+        />
+        <FeatureCard
+          Icon={Camera}
+          title="Automated IG stories"
+          blurb="Our AI verifies a guest's tagged story and releases the reward — authentic reach, no chasing screenshots."
+        />
+        <FeatureCard
+          Icon={BarChart3}
+          title="Marketing intelligence"
+          blurb="Influenced spend, conversion funnel, ROAS, and a tier-source breakdown in one dashboard with an AI copilot."
+        />
+      </section>
+
+      <section className="mx-auto max-w-5xl px-6 pt-4 pb-10 md:px-10">
+        <div className="text-center">
+          <h2 className="font-display text-[30px] font-semibold tracking-[-0.02em]">
+            Simple, two-axis pricing
+          </h2>
+          <p className="text-muted-foreground mt-2 text-sm">
+            Three plans while we make adoption easy. Your fiscal type
+            decides the mechanic.
+          </p>
+        </div>
+        <div className="mt-6 grid gap-4 md:grid-cols-3">
+          <PriceCard
+            tag="Free"
+            amount="$0"
+            mechanicLabel="None"
+            blurb="minimum visibility"
+          />
+          <PriceCard
+            tag="Formal Pro"
+            amount="$200"
+            mechanicLabel="Cashback"
+            blurb="priority placement"
+            featured
+          />
+          <PriceCard
+            tag="Informal Pro"
+            amount="$400"
+            mechanicLabel="Instant discount"
+            blurb="priority placement"
+          />
+        </div>
+      </section>
+
+      <footer className="border-border text-muted-foreground border-t px-6 py-7 text-center text-xs">
+        Made in Monterrey · © Mesita
+      </footer>
+    </div>
+  );
+}
+
+function Brandmark() {
+  return (
+    <Link href="/" className="inline-flex items-center gap-2 no-underline">
+      <span className="bg-peacock shadow-glow flex h-9 w-9 items-center justify-center rounded-full text-base">
+        🦚
+      </span>
+      <span className="font-display text-[21px] font-semibold tracking-[-0.02em]">
+        mesita.
+      </span>
+    </Link>
+  );
+}
+
+function FeatureCard({
+  Icon,
+  title,
+  blurb,
+}: {
+  Icon: typeof Search;
+  title: string;
+  blurb: string;
+}) {
+  return (
+    <div className="bg-card-soft border-border rounded-[20px] border p-6">
+      <div className="bg-primary/10 text-primary mb-3.5 flex h-10 w-10 items-center justify-center rounded-[13px]">
+        <Icon className="h-5 w-5" />
+      </div>
+      <h3 className="font-display text-[17px] font-semibold tracking-[-0.01em]">
+        {title}
+      </h3>
+      <p className="text-muted-foreground mt-1.5 text-[13px] leading-[1.5]">
+        {blurb}
+      </p>
+    </div>
+  );
+}
+
+function PriceCard({
+  tag,
+  amount,
+  mechanicLabel,
+  blurb,
+  featured,
+}: {
+  tag: string;
+  amount: string;
+  mechanicLabel: string;
+  blurb: string;
+  featured?: boolean;
+}) {
+  return (
+    <div
+      className={
+        "bg-card relative rounded-[22px] border p-6 " +
+        (featured ? "border-primary/50 shadow-glow" : "border-border")
+      }
+    >
+      {featured && (
+        <span className="bg-pink-gradient shadow-glow absolute -top-3 right-5 rounded-full px-3 py-1.5 text-[10px] font-bold tracking-[0.08em] text-white uppercase">
+          Most picked
+        </span>
+      )}
+      <p className="text-muted-foreground text-[11px] font-bold tracking-[0.12em] uppercase">
+        {tag}
+      </p>
+      <p className="font-display mt-2.5 mb-0.5 text-[34px] font-semibold">
+        {amount}{" "}
+        <small className="text-muted-foreground text-sm font-medium">
+          MXN / mo
+        </small>
+      </p>
+      <p className="text-muted-foreground mt-1.5 text-[13px]">
+        Mechanic: <b className="text-foreground">{mechanicLabel}</b> ·{" "}
+        {blurb}
+      </p>
+    </div>
+  );
 }
