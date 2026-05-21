@@ -20,37 +20,31 @@ export const FUNNEL = [
   { stage: "Stories shared", value: 146 },
 ];
 
-export const ANALYTICS_KPIS = [
-  {
-    label: "Profile views",
-    value: "12.4k",
-    delta: "+18%",
-    trend: "up" as const,
-  },
-  {
-    label: "Influenced spend",
-    value: "$84.2k",
-    delta: "+22%",
-    trend: "up" as const,
-  },
-  {
-    label: "Cashback paid",
-    value: "$11.8k",
-    delta: "+14%",
-    trend: "up" as const,
-  },
-  { label: "Gifts shared", value: "146", delta: "+31%", trend: "up" as const },
+export type KpiTrend = "up" | "down";
+
+export type Kpi = {
+  label: string;
+  value: string;
+  delta: string;
+  trend: KpiTrend;
+};
+
+export const ANALYTICS_KPIS: Kpi[] = [
+  { label: "Profile views", value: "12.4k", delta: "+18%", trend: "up" },
+  { label: "Influenced spend", value: "$84.2k", delta: "+22%", trend: "up" },
+  { label: "Cashback paid", value: "$11.8k", delta: "+14%", trend: "up" },
+  { label: "Gifts shared", value: "146", delta: "+31%", trend: "up" },
 ];
 
-export const SECONDARY_METRICS = [
+export const SECONDARY_METRICS: Kpi[] = [
   {
     label: "Average ticket",
     value: "$642",
     delta: "+9% vs last 30d",
-    trend: "up" as const,
+    trend: "up",
   },
-  { label: "Repeat rate", value: "38%", delta: "+6 pts", trend: "up" as const },
-  { label: "ROAS", value: "7.1×", delta: "+0.8×", trend: "up" as const },
+  { label: "Repeat rate", value: "38%", delta: "+6 pts", trend: "up" },
+  { label: "ROAS", value: "7.1×", delta: "+0.8×", trend: "up" },
 ];
 
 export type VerifiedStory = {
