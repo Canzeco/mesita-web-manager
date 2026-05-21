@@ -166,7 +166,16 @@ export const VALIDATOR_THREAD: ValidatorThreadMessage[] = [
 
 // ── Wallet (wallet/page.tsx) ──────────────────────────────────────────────
 
-export const WALLET = {
+export type WalletSummary = {
+  balance: number;
+  pendingPayout: number;
+  thisMonth: number;
+  lifetime: number;
+  payoutAccount: string;
+  stripeConnected: boolean;
+};
+
+export const WALLET: WalletSummary = {
   balance: 142_300,
   pendingPayout: 38_400,
   thisMonth: 38_400,
