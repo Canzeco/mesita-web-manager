@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   AlertTriangle,
@@ -16,7 +16,7 @@ import {
   Percent,
   Users,
 } from "lucide-react";
-import { createBrowserSupabase } from "@/lib/supabase/browser";
+import { useBrowserSupabase } from "@/lib/supabase/browser";
 import { apiUpdateVenue, type MyVenue, type VenuePlan } from "@/lib/api/venues";
 import type { Tier } from "@/lib/guest-data";
 import { Badge } from "@/components/ui/badge";
@@ -111,7 +111,7 @@ const TIERS: TierMeta[] = [
 
 export function PromosClient({ venue }: { venue: MyVenue }) {
   const router = useRouter();
-  const supabase = useMemo(() => createBrowserSupabase(), []);
+  const supabase = useBrowserSupabase();
 
   const [plan, setPlan] = useState<VenuePlan>(venue.plan);
   const [pending, startSubmit] = useTransition();
