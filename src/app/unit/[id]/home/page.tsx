@@ -194,11 +194,12 @@ function UnitSwitcher({
           <Link
             key={v.id}
             href={`/unit/${v.id}/home`}
-            className={
+            className={cn(
+              "rounded-full px-3 py-1.5 text-xs font-semibold transition",
               on
-                ? "bg-foreground text-background rounded-full px-3 py-1.5 text-xs font-semibold"
-                : "border-border bg-card text-muted-foreground hover:text-foreground rounded-full border px-3 py-1.5 text-xs font-semibold transition"
-            }
+                ? "bg-foreground text-background"
+                : "border-border bg-card text-muted-foreground hover:text-foreground border",
+            )}
           >
             {v.name}
           </Link>
@@ -267,19 +268,17 @@ function WeekSnapshot() {
         </span>
       </header>
       <div className="border-border grid grid-cols-2 divide-x divide-y rounded-2xl border md:grid-cols-4 md:divide-y-0">
-        {stats.map((s) => {
-          return (
-            <div key={s.label} className="px-4 py-4">
-              <p className="text-muted-foreground text-[11px]">{s.label}</p>
-              <p className="font-display mt-1 text-2xl font-semibold tracking-tight tabular-nums">
-                {s.value}
-              </p>
-              <p className="text-secondary mt-0.5 text-[11px] font-semibold">
-                {s.delta}
-              </p>
-            </div>
-          );
-        })}
+        {stats.map((s) => (
+          <div key={s.label} className="px-4 py-4">
+            <p className="text-muted-foreground text-[11px]">{s.label}</p>
+            <p className="font-display mt-1 text-2xl font-semibold tracking-tight tabular-nums">
+              {s.value}
+            </p>
+            <p className="text-secondary mt-0.5 text-[11px] font-semibold">
+              {s.delta}
+            </p>
+          </div>
+        ))}
       </div>
     </section>
   );
