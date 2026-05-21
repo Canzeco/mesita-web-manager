@@ -527,17 +527,10 @@ export function workflowSteps(ticket: Ticket): WorkflowStep[] {
     ];
   }
 
-  // Mark the first not-done step as the current one.
-  const out: WorkflowStep[] = [];
-  let currentAssigned = false;
-  for (const s of steps) {
-    out.push({
-      ...s,
-      current: !currentAssigned && !s.done ? true : false,
-    });
-    if (!currentAssigned && !s.done) currentAssigned = true;
-  }
-  return out;
+  // Mark the first not-done step as the current one (findIndex returns
+  // -1 when every step is done, which collapses to no `current` step).
+  const currentIdx = steps.findIndex((s) => !s.done);
+  return steps.map((s, i) => ({ ...s, current: i === currentIdx }));
 }
 
 // ─── Display helpers ─────────────────────────────────────────────────────
