@@ -5,6 +5,7 @@ import {
   BarChart3,
   Camera,
   MapPin,
+  Plus,
   Search,
   Sparkles,
   Star,
@@ -19,10 +20,18 @@ import { AppHeader } from "@/components/auth/AppHeader";
 //   no session         → render the marketing landing (this page)
 //   not onboarded      → /onboard
 //   no venues          → render the venue-less hub (empty state +
-//                        "Add your first venue" CTA → /add).
-//                        Used to redirect → /add, which created an
-//                        infinite "Back to home" loop on /add itself.
-//   venues exist       → /unit/<first venue id>/home
+//                        "Add your first venue" CTA → /add). Used to
+//                        redirect to /add, which created a "Back to
+//                        home" loop on /add itself.
+//   venues exist       → render the multi-venue hub (venue cards +
+//                        "Add another" CTA). Used to redirect into
+//                        /unit/<first>/home, which made the brand link
+//                        feel like a trap — clicking "home" force-
+//                        shunted you into one specific venue's
+//                        dashboard. Post-signin still lands users
+//                        directly on their venue via /auth/post-signin;
+//                        this page only renders when someone explicitly
+//                        navigates to `/`.
 
 export const dynamic = "force-dynamic";
 
@@ -47,9 +56,15 @@ export default async function RootPage() {
     } catch (err) {
       console.error("[root] manager-get-overview:", err);
     }
-    const firstVenueId = overview?.venues?.[0]?.id;
-    if (firstVenueId) redirect(`/unit/${firstVenueId}/home`);
-    return <VenuelessHub email={user.email ?? null} />;
+    const venues = (overview?.venues ?? []).map((v) => ({
+      id: v.id,
+      name: v.name,
+      address: v.address ?? null,
+    }));
+    if (venues.length === 0) {
+      return <VenuelessHub email={user.email ?? null} />;
+    }
+    return <VenueHub email={user.email ?? null} venues={venues} />;
   }
 
   return (
@@ -292,6 +307,69 @@ function VenuelessHub({ email }: { email: string | null }) {
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// Authenticated + at least one venue. Used to be a hard redirect to
+// /unit/<first>/home which made the brand link from /add (and any
+// other "home" gesture) feel like a trap. Now it's a real navigable
+// hub: AppHeader, venue cards (each links to its dashboard), and an
+// "Add another" CTA. Post-signin still lands users directly on a
+// venue via /auth/post-signin so the happy-path login is unchanged;
+// this hub only shows when someone explicitly hits `/`.
+function VenueHub({
+  email,
+  venues,
+}: {
+  email: string | null;
+  venues: Array<{ id: string; name: string; address: string | null }>;
+}) {
+  return (
+    <div className="bg-background min-h-dvh">
+      <AppHeader email={email} venues={venues.map(({ id, name }) => ({ id, name }))} />
+      <div className="mx-auto max-w-3xl px-6 py-10">
+        <h1 className="font-display text-[28px] font-semibold tracking-[-0.02em]">
+          Your venues
+        </h1>
+        <p className="text-muted-foreground mt-2 text-sm">
+          Pick a venue to open its dashboard, or add another.
+        </p>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          {venues.map((v) => (
+            <Link
+              key={v.id}
+              href={`/unit/${v.id}/home`}
+              className="border-border bg-card hover:border-foreground/30 group flex flex-col gap-2.5 rounded-[18px] border p-5 transition"
+            >
+              <span className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-full">
+                <MapPin className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="font-display text-base font-semibold tracking-[-0.01em]">
+                  {v.name}
+                </p>
+                {v.address && (
+                  <p className="text-muted-foreground mt-0.5 truncate text-[12px]">
+                    {v.address}
+                  </p>
+                )}
+              </div>
+              <span className="text-muted-foreground mt-2 inline-flex items-center gap-1 text-[12px] font-medium">
+                Open dashboard
+                <ArrowRight className="h-3 w-3 transition group-hover:translate-x-0.5" />
+              </span>
+            </Link>
+          ))}
+        </div>
+        <Link
+          href="/add"
+          className="border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground mt-3 flex items-center justify-center gap-2 rounded-[18px] border border-dashed py-4 text-sm font-medium transition"
+        >
+          <Plus className="h-4 w-4" />
+          Add another venue
+        </Link>
       </div>
     </div>
   );
