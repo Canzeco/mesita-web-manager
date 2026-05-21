@@ -365,14 +365,19 @@ export async function apiVerifyStory(
   };
 }
 
+export type SubmitStoryInput = { ticketId: string; screenshotUrl: string };
+
+type SubmitStoryPayload = { ticket: Ticket; alreadyVerified?: boolean };
+
 export async function apiSubmitStory(
   client: SupabaseClient,
-  input: { ticketId: string; screenshotUrl: string },
+  input: SubmitStoryInput,
 ): Promise<Ticket> {
-  const { ticket } = await invokeEF<{
-    ticket: Ticket;
-    alreadyVerified?: boolean;
-  }>(client, "guest-submit-story", input);
+  const { ticket } = await invokeEF<SubmitStoryPayload>(
+    client,
+    "guest-submit-story",
+    input,
+  );
   return ticket;
 }
 
