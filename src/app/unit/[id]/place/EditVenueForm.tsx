@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   Loader2,
@@ -25,7 +25,7 @@ import {
   Star,
   Mail,
 } from "lucide-react";
-import { createBrowserSupabase } from "@/lib/supabase/browser";
+import { useBrowserSupabase } from "@/lib/supabase/browser";
 import {
   apiUpdateVenue,
   type MyVenue,
@@ -107,7 +107,7 @@ function nullableUrl(v: string): string | null {
 
 export function EditVenueForm({ venue }: { venue: MyVenue }) {
   const router = useRouter();
-  const supabase = useMemo(() => createBrowserSupabase(), []);
+  const supabase = useBrowserSupabase();
 
   const [name, setName] = useState(venue.name);
   const [status, setStatus] = useState<Status>(() => {
