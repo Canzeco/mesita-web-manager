@@ -466,10 +466,10 @@ export type SavedItem = {
   reservationStatus?: "pending" | "confirmed";
 };
 
-export function ticketType(
-  steps: StepKey[],
-): "R" | "PC" | "RPC" | "PSC" | "RPSC" {
-  return steps.join("") as "R" | "PC" | "RPC" | "PSC" | "RPSC";
+export type TicketTypeKey = "R" | "PC" | "RPC" | "PSC" | "RPSC";
+
+export function ticketType(steps: StepKey[]): TicketTypeKey {
+  return steps.join("") as TicketTypeKey;
 }
 
 export const RESERVATIONS: SavedItem[] = [
