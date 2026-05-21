@@ -29,7 +29,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { TicketTypesCard } from "@/components/manager/TicketTypesCard";
-import { cn } from "@/lib/utils";
+import { cn, errMsg } from "@/lib/utils";
 import { PLANS, mechanicForPlan } from "@/lib/manager/plans";
 
 // Promos owns three layers of configuration in one page:
@@ -128,7 +128,7 @@ export function PromosClient({ venue }: { venue: MyVenue }) {
         await apiUpdateVenue(supabase, { id: venue.id, fiscal_type: next });
         router.refresh();
       } catch (err) {
-        setFiscalError(err instanceof Error ? err.message : "Couldn't save.");
+        setFiscalError(errMsg(err, "Couldn't save."));
       }
     });
   };
@@ -151,9 +151,7 @@ export function PromosClient({ venue }: { venue: MyVenue }) {
         setSaved(true);
         router.refresh();
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Couldn't save the plan.",
-        );
+        setError(errMsg(err, "Couldn't save the plan."));
       } finally {
         setPendingPlanId(null);
       }
