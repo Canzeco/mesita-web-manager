@@ -8,6 +8,7 @@ import {
   VERIFIED_STORIES,
   VALIDATOR_FEED,
   VALIDATOR_THREAD,
+  type Kpi,
 } from "@/lib/manager-data";
 import { tierBadgeClass } from "@/lib/guest-data";
 import { cn } from "@/lib/utils";
@@ -273,17 +274,7 @@ export default async function PerformancePage({
   );
 }
 
-function Stat({
-  label,
-  value,
-  delta,
-  trend,
-}: {
-  label: string;
-  value: string;
-  delta: string;
-  trend: "up" | "down";
-}) {
+function Stat({ label, value, delta, trend }: Kpi) {
   return (
     <div className="border-border bg-card rounded-2xl border p-5">
       <p className="text-muted-foreground text-[11px] font-medium tracking-[0.18em] uppercase">
