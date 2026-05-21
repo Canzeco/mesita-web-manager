@@ -425,13 +425,19 @@ function PlaceCompletenessCard({
 
 // ── Top guests this week ────────────────────────────────────────────────
 
+type TopGuest = {
+  handle: string;
+  tier: "bronze" | "silver" | "gold";
+  visits: number;
+};
+
 function TopGuestsCard() {
-  const guests = [
-    { handle: "@valenrose", tier: "gold" as const, visits: 4 },
-    { handle: "@camivb", tier: "gold" as const, visits: 3 },
-    { handle: "@sofip", tier: "silver" as const, visits: 3 },
-    { handle: "@lucasm", tier: "silver" as const, visits: 2 },
-    { handle: "@anita", tier: "bronze" as const, visits: 2 },
+  const guests: TopGuest[] = [
+    { handle: "@valenrose", tier: "gold", visits: 4 },
+    { handle: "@camivb", tier: "gold", visits: 3 },
+    { handle: "@sofip", tier: "silver", visits: 3 },
+    { handle: "@lucasm", tier: "silver", visits: 2 },
+    { handle: "@anita", tier: "bronze", visits: 2 },
   ];
   return (
     <section className="border-border bg-card rounded-2xl border p-5">
