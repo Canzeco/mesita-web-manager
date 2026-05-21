@@ -58,16 +58,15 @@ const PRICE_OPTIONS = [
   { value: "4", label: "$$$$ · Fine dining" },
 ];
 
-const STATUS_OPTIONS: {
-  value: "active" | "paused" | "archived";
-  label: string;
-}[] = [
+type Status = "active" | "paused" | "archived";
+
+const STATUS_OPTIONS: { value: Status; label: string }[] = [
   { value: "active", label: "Active — visible to guests" },
   { value: "paused", label: "Paused — temporarily hidden" },
   { value: "archived", label: "Archived — closed permanently" },
 ];
 
-type Status = "active" | "paused" | "archived";
+const VALID_STATUSES: Status[] = STATUS_OPTIONS.map((s) => s.value);
 
 // Single source of truth for every link/social field on the venue.
 // Used both as the keys of LinksState (form-side strings) and as the
@@ -115,8 +114,7 @@ export function EditVenueForm({ venue }: { venue: MyVenue }) {
     // Lead venues haven't been promoted yet — surface them as Active in the
     // form so a Save promotes them; ditto for anything unrecognised so the
     // form never crashes on a status the schema added later than this UI.
-    const valid: Status[] = ["active", "paused", "archived"];
-    return valid.includes(venue.status as Status)
+    return VALID_STATUSES.includes(venue.status as Status)
       ? (venue.status as Status)
       : "active";
   });
