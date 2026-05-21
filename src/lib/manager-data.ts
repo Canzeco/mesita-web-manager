@@ -181,10 +181,21 @@ export const WALLET = {
   stripeConnected: true,
 };
 
-export const TRANSACTIONS = [
+export type TransactionKind = "visit" | "payout" | "fee";
+
+export type Transaction = {
+  id: string;
+  kind: TransactionKind;
+  label: string;
+  amount: number;
+  cashback: number;
+  when: string;
+};
+
+export const TRANSACTIONS: Transaction[] = [
   {
     id: "t-1",
-    kind: "visit" as const,
+    kind: "visit",
     label: "Visit · Valentina R.",
     amount: 1840,
     cashback: -276,
@@ -192,7 +203,7 @@ export const TRANSACTIONS = [
   },
   {
     id: "t-2",
-    kind: "visit" as const,
+    kind: "visit",
     label: "Visit · Lucas M.",
     amount: 920,
     cashback: -138,
@@ -200,7 +211,7 @@ export const TRANSACTIONS = [
   },
   {
     id: "t-3",
-    kind: "payout" as const,
+    kind: "payout",
     label: "Payout · BBVA ··· 4421",
     amount: -24_500,
     cashback: 0,
@@ -208,7 +219,7 @@ export const TRANSACTIONS = [
   },
   {
     id: "t-4",
-    kind: "visit" as const,
+    kind: "visit",
     label: "Visit · Renata G.",
     amount: 640,
     cashback: -64,
@@ -216,7 +227,7 @@ export const TRANSACTIONS = [
   },
   {
     id: "t-5",
-    kind: "fee" as const,
+    kind: "fee",
     label: "Mesita commission · May",
     amount: -2_400,
     cashback: 0,
@@ -224,7 +235,7 @@ export const TRANSACTIONS = [
   },
   {
     id: "t-6",
-    kind: "payout" as const,
+    kind: "payout",
     label: "Payout · BBVA ··· 4421",
     amount: -52_000,
     cashback: 0,
