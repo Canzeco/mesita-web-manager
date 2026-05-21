@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/card";
 import { TicketTypesCard } from "@/components/manager/TicketTypesCard";
 import { cn, errMsg } from "@/lib/utils";
+import { ERROR_BOX_CLASS } from "@/lib/ui-classes";
 import { PLANS, mechanicForPlan } from "@/lib/manager/plans";
 
 // Promos owns three layers of configuration in one page:
@@ -186,11 +187,7 @@ export function PromosClient({ venue }: { venue: MyVenue }) {
           onSwitch={switchFiscal}
         />
 
-        {fiscalError && (
-          <p className="bg-destructive/10 text-destructive rounded-lg px-3 py-2 text-xs">
-            {fiscalError}
-          </p>
-        )}
+        {fiscalError && <p className={ERROR_BOX_CLASS}>{fiscalError}</p>}
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {PLANS.map((p) => {
