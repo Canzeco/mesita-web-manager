@@ -314,26 +314,23 @@ function QuickActions({ activeId }: { activeId: string }) {
   ];
   return (
     <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-      {tabs.map((t) => {
-        const Icon = t.Icon;
-        return (
-          <Link
-            key={t.href}
-            href={t.href}
-            className="group border-border bg-card hover:border-foreground/30 flex flex-col gap-2 rounded-2xl border p-4 transition hover:shadow-sm"
-          >
-            <span className="bg-muted text-foreground group-hover:bg-foreground group-hover:text-background flex h-8 w-8 items-center justify-center rounded-full transition">
-              <Icon className="h-4 w-4" />
-            </span>
-            <div>
-              <p className="font-display text-base font-semibold tracking-tight">
-                {t.label}
-              </p>
-              <p className="text-muted-foreground mt-1 text-[12px]">{t.sub}</p>
-            </div>
-          </Link>
-        );
-      })}
+      {tabs.map(({ href, label, sub, Icon }) => (
+        <Link
+          key={href}
+          href={href}
+          className="group border-border bg-card hover:border-foreground/30 flex flex-col gap-2 rounded-2xl border p-4 transition hover:shadow-sm"
+        >
+          <span className="bg-muted text-foreground group-hover:bg-foreground group-hover:text-background flex h-8 w-8 items-center justify-center rounded-full transition">
+            <Icon className="h-4 w-4" />
+          </span>
+          <div>
+            <p className="font-display text-base font-semibold tracking-tight">
+              {label}
+            </p>
+            <p className="text-muted-foreground mt-1 text-[12px]">{sub}</p>
+          </div>
+        </Link>
+      ))}
     </section>
   );
 }
@@ -394,36 +391,31 @@ function PlaceCompletenessCard({
         />
       </div>
       <ul className="mt-4 flex flex-col gap-2">
-        {items.map((i) => {
-          const Icon = i.Icon;
-          return (
-            <li key={i.label} className="flex items-center gap-2.5 text-[12px]">
-              <span
-                className={cn(
-                  "flex h-5 w-5 shrink-0 items-center justify-center rounded-full",
-                  i.ok
-                    ? "bg-secondary/15 text-secondary"
-                    : "bg-muted text-muted-foreground",
-                )}
-              >
-                {i.ok ? (
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                ) : (
-                  <Icon className="h-3 w-3" />
-                )}
-              </span>
-              <span
-                className={cn(
-                  i.ok
-                    ? "text-muted-foreground line-through"
-                    : "text-foreground",
-                )}
-              >
-                {i.label}
-              </span>
-            </li>
-          );
-        })}
+        {items.map(({ ok, label, Icon }) => (
+          <li key={label} className="flex items-center gap-2.5 text-[12px]">
+            <span
+              className={cn(
+                "flex h-5 w-5 shrink-0 items-center justify-center rounded-full",
+                ok
+                  ? "bg-secondary/15 text-secondary"
+                  : "bg-muted text-muted-foreground",
+              )}
+            >
+              {ok ? (
+                <CheckCircle2 className="h-3.5 w-3.5" />
+              ) : (
+                <Icon className="h-3 w-3" />
+              )}
+            </span>
+            <span
+              className={cn(
+                ok ? "text-muted-foreground line-through" : "text-foreground",
+              )}
+            >
+              {label}
+            </span>
+          </li>
+        ))}
       </ul>
       <Link
         href={`/unit/${unitId}/place`}
