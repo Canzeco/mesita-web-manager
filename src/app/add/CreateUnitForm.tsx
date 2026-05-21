@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   AlertTriangle,
@@ -18,7 +18,7 @@ import {
   Video,
 } from "lucide-react";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { createBrowserSupabase } from "@/lib/supabase/browser";
+import { useBrowserSupabase } from "@/lib/supabase/browser";
 import {
   apiEnrichCreateVenue,
   apiPlacesAutocomplete,
@@ -52,7 +52,7 @@ type VerificationCallbacks = {
 
 export function CreateUnitForm({ signedInEmail }: { signedInEmail: string }) {
   const router = useRouter();
-  const supabase = useMemo(() => createBrowserSupabase(), []);
+  const supabase = useBrowserSupabase();
 
   // Search/autocomplete state.
   const sessionTokenRef = useRef(newSessionToken());
