@@ -72,7 +72,7 @@ export function EmailAuthForm({
       </Field>
 
       {state?.error && (
-        <p className={`${ERROR_BOX_CLASS} leading-relaxed`}>{state.error}</p>
+        <p className={cn(ERROR_BOX_CLASS, "leading-relaxed")}>{state.error}</p>
       )}
       {state?.info && <p className={INFO_BOX_CLASS}>{state.info}</p>}
 
