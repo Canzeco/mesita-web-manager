@@ -298,23 +298,22 @@ export async function apiMarkTicketPaid(
   };
 }
 
-export async function apiLookupGuest(
-  client: SupabaseClient,
-  code: string,
-): Promise<{
+export type GuestLookupResult = {
   id: string;
   code: string;
   full_name: string | null;
   cashback_balance_cents: number;
-}> {
-  const { guest } = await invokeEF<{
-    guest: {
-      id: string;
-      code: string;
-      full_name: string | null;
-      cashback_balance_cents: number;
-    };
-  }>(client, "manager-find-guest", { code });
+};
+
+export async function apiLookupGuest(
+  client: SupabaseClient,
+  code: string,
+): Promise<GuestLookupResult> {
+  const { guest } = await invokeEF<{ guest: GuestLookupResult }>(
+    client,
+    "manager-find-guest",
+    { code },
+  );
   return guest;
 }
 
@@ -326,22 +325,32 @@ export async function apiCancelTicket(
   await invokeEF(client, "manager-cancel-ticket", { ticketId, reason });
 }
 
-export async function apiVerifyStory(
-  client: SupabaseClient,
-  input: { ticketId: string; decision: "approve" | "reject"; reason?: string },
-): Promise<{
+export type VerifyStoryInput = {
+  ticketId: string;
+  decision: "approve" | "reject";
+  reason?: string;
+};
+
+export type VerifyStoryResult = {
   ticket: Ticket;
   cashbackCreditedCents: number;
   cashbackRedeemedCents: number;
   guestBalanceAfterCents: number | null;
-}> {
-  const data = await invokeEF<{
-    ticket: Ticket;
-    cashbackCreditedCents: number;
-    cashbackRedeemedCents: number;
-    guestBalanceAfterCents: number | null;
-    alreadyDecided?: boolean;
-  }>(client, "manager-verify-story", input);
+};
+
+// EF response widens VerifyStoryResult with an idempotency flag we drop
+// before returning — callers don't need it.
+type VerifyStoryPayload = VerifyStoryResult & { alreadyDecided?: boolean };
+
+export async function apiVerifyStory(
+  client: SupabaseClient,
+  input: VerifyStoryInput,
+): Promise<VerifyStoryResult> {
+  const data = await invokeEF<VerifyStoryPayload>(
+    client,
+    "manager-verify-story",
+    input,
+  );
   return {
     ticket: data.ticket,
     cashbackCreditedCents: data.cashbackCreditedCents,
