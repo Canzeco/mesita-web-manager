@@ -53,12 +53,14 @@ export const SECONDARY_METRICS = [
   { label: "ROAS", value: "7.1×", delta: "+0.8×", trend: "up" as const },
 ];
 
-export const VERIFIED_STORIES: {
+export type VerifiedStory = {
   handle: string;
   tier: Tier;
   ago: string;
   gradient: string;
-}[] = [
+};
+
+export const VERIFIED_STORIES: VerifiedStory[] = [
   {
     handle: "@valenrose",
     tier: "gold",
@@ -97,7 +99,7 @@ export const VERIFIED_STORIES: {
   },
 ];
 
-export const VALIDATOR_FEED: {
+export type ValidatorFeedItem = {
   id: string;
   name: string;
   role: string;
@@ -106,7 +108,9 @@ export const VALIDATOR_FEED: {
   validated: number;
   flagged: number;
   avatarBg: string;
-}[] = [
+};
+
+export const VALIDATOR_FEED: ValidatorFeedItem[] = [
   {
     id: "vf-carlos",
     name: "Carlos",
@@ -139,13 +143,15 @@ export const VALIDATOR_FEED: {
   },
 ];
 
-export const VALIDATOR_THREAD: {
+export type ValidatorThreadMessage = {
   id: string;
   side: "in" | "out";
   text: string;
   at: string;
   warning?: string;
-}[] = [
+};
+
+export const VALIDATOR_THREAD: ValidatorThreadMessage[] = [
   {
     id: "m1",
     side: "in",
