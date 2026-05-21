@@ -185,15 +185,12 @@ export function EditVenueForm({ venue }: { venue: MyVenue }) {
       return;
     }
 
-    // Each LinksState key maps 1:1 onto an UpdateVenueInput field of the
+    // Each LINK_KEYS entry maps 1:1 onto an UpdateVenueInput field of the
     // same name, so the payload pulls every URL through nullableUrl in a
     // single sweep instead of 16 hand-written lines.
     const linkPayload = Object.fromEntries(
-      (Object.keys(links) as (keyof LinksState)[]).map((k) => [
-        k,
-        nullableUrl(links[k]),
-      ]),
-    ) as { [K in keyof LinksState]: string | null };
+      LINK_KEYS.map((k) => [k, nullableUrl(links[k])]),
+    ) as { [K in (typeof LINK_KEYS)[number]]: string | null };
 
     const payload: UpdateVenueInput = {
       id: venue.id,
