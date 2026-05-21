@@ -617,24 +617,21 @@ function RatePicker({
         </span>
       </p>
       <div className="mt-3 flex flex-wrap gap-1.5">
-        {RATE_CHOICES.map((c) => {
-          const on = c === rate;
-          return (
-            <button
-              key={c}
-              type="button"
-              onClick={() => onChange(c)}
-              className={cn(
-                "rounded-full px-3 py-1.5 text-[11px] font-semibold transition",
-                on
-                  ? "bg-pink-gradient text-white shadow-sm"
-                  : "border-border bg-background text-foreground hover:border-foreground/30 border",
-              )}
-            >
-              {c}%
-            </button>
-          );
-        })}
+        {RATE_CHOICES.map((c) => (
+          <button
+            key={c}
+            type="button"
+            onClick={() => onChange(c)}
+            className={cn(
+              "rounded-full px-3 py-1.5 text-[11px] font-semibold transition",
+              c === rate
+                ? "bg-pink-gradient text-white shadow-sm"
+                : "border-border bg-background text-foreground hover:border-foreground/30 border",
+            )}
+          >
+            {c}%
+          </button>
+        ))}
       </div>
     </div>
   );
