@@ -192,6 +192,16 @@ export function EditVenueForm({ venue }: { venue: MyVenue }) {
       return;
     }
 
+    // Each LinksState key maps 1:1 onto an UpdateVenueInput field of the
+    // same name, so the payload pulls every URL through nullableUrl in a
+    // single sweep instead of 16 hand-written lines.
+    const linkPayload = Object.fromEntries(
+      (Object.keys(links) as (keyof LinksState)[]).map((k) => [
+        k,
+        nullableUrl(links[k]),
+      ]),
+    ) as { [K in keyof LinksState]: string | null };
+
     const payload: UpdateVenueInput = {
       id: venue.id,
       name: trimmedName,
@@ -206,22 +216,7 @@ export function EditVenueForm({ venue }: { venue: MyVenue }) {
       pitch: nullable(pitch),
       story: nullable(story),
       photos,
-      website_url: nullableUrl(links.website_url),
-      instagram_url: nullableUrl(links.instagram_url),
-      tiktok_url: nullableUrl(links.tiktok_url),
-      facebook_url: nullableUrl(links.facebook_url),
-      whatsapp_url: nullableUrl(links.whatsapp_url),
-      opentable_url: nullableUrl(links.opentable_url),
-      resy_url: nullableUrl(links.resy_url),
-      uber_eats_url: nullableUrl(links.uber_eats_url),
-      rappi_url: nullableUrl(links.rappi_url),
-      x_url: nullableUrl(links.x_url),
-      youtube_url: nullableUrl(links.youtube_url),
-      threads_url: nullableUrl(links.threads_url),
-      reddit_url: nullableUrl(links.reddit_url),
-      didi_food_url: nullableUrl(links.didi_food_url),
-      tripadvisor_url: nullableUrl(links.tripadvisor_url),
-      google_maps_url: nullableUrl(links.google_maps_url),
+      ...linkPayload,
       email: trimmedEmail === "" ? null : trimmedEmail,
     };
 
