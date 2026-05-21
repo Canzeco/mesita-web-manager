@@ -409,6 +409,9 @@ export function workflowSteps(ticket: Ticket): WorkflowStep[] {
   const awaitingStory = ticket.status === "awaiting_story";
   const revealed = ticket.status === "revealed" || ticket.status === "paid";
   const cancelled = ticket.status === "cancelled";
+  // The waiter-side flow has officially started — everything from "arrive"
+  // through "validate-qr" is locked in once any of these are true.
+  const visitDone = revealed || paid || awaitingStory;
   const storyVerified =
     ticket.story_status === "ai_verified" ||
     ticket.story_status === "waiter_verified";
@@ -437,7 +440,7 @@ export function workflowSteps(ticket: Ticket): WorkflowStep[] {
     title: "Arrive & enjoy",
     sub: "Show up and enjoy your visit as usual.",
     forClarity: true,
-    done: revealed || paid || awaitingStory,
+    done: visitDone,
   });
 
   if (requiresStory) {
@@ -454,14 +457,14 @@ export function workflowSteps(ticket: Ticket): WorkflowStep[] {
     title: "Ask for the bill",
     sub: "When you're ready to leave, ask the waiter for your bill.",
     forClarity: true,
-    done: revealed || paid || awaitingStory,
+    done: visitDone,
   });
 
   steps.push({
     id: "show-qr",
     title: "Show your QR to waiter",
     sub: "Open this ticket and show your personal QR code.",
-    done: revealed || paid || awaitingStory,
+    done: visitDone,
   });
 
   steps.push({
@@ -470,7 +473,7 @@ export function workflowSteps(ticket: Ticket): WorkflowStep[] {
     sub: isFormal
       ? "The waiter scans your QR and enters your bill total + tip."
       : "The waiter scans your QR. The discount is revealed and applied to the bill.",
-    done: revealed || paid || awaitingStory,
+    done: visitDone,
   });
 
   if (isFormal) {
@@ -485,7 +488,7 @@ export function workflowSteps(ticket: Ticket): WorkflowStep[] {
       id: "pay-cash",
       title: "Pay the bill in cash",
       sub: "Discount is already applied to the total.",
-      done: revealed || paid || awaitingStory,
+      done: visitDone,
     });
   }
 
