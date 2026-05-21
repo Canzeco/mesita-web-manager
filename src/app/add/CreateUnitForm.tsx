@@ -34,7 +34,7 @@ import {
 } from "@/lib/api/verifications";
 import { Field } from "@/components/shared";
 import { INPUT_CLASS } from "@/lib/ui-classes";
-import { cn } from "@/lib/utils";
+import { cn, errMsg } from "@/lib/utils";
 
 const SEARCH_DEBOUNCE_MS = 220;
 
@@ -1116,11 +1116,4 @@ function newSessionToken(): string {
     return crypto.randomUUID();
   }
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
-}
-
-// Unwrap an arbitrary thrown value to a user-facing message, falling
-// back to the call-site default when the throwable isn't an Error
-// (e.g. fetch rejected with a plain object).
-function errMsg(err: unknown, fallback: string): string {
-  return err instanceof Error ? err.message : fallback;
 }
