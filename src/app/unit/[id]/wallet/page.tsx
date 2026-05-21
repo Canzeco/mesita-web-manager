@@ -170,7 +170,10 @@ function TypeBadge({ kind }: { kind: "visit" | "payout" | "fee" }) {
   }[kind];
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wider uppercase ${meta.tone}`}
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wider uppercase",
+        meta.tone,
+      )}
     >
       <meta.Icon className="h-3 w-3" />
       {meta.label}
