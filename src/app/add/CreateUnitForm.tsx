@@ -33,7 +33,7 @@ import {
   type LookupVenue,
 } from "@/lib/api/verifications";
 import { Field } from "@/components/shared";
-import { INPUT_CLASS } from "@/lib/ui-classes";
+import { ERROR_BOX_CLASS, INPUT_CLASS } from "@/lib/ui-classes";
 import { cn, errMsg } from "@/lib/utils";
 
 const SEARCH_DEBOUNCE_MS = 220;
@@ -374,11 +374,7 @@ function NotInMesitaCard({
         own channels and list it as a web listing. After that you can claim
         ownership in the same step.
       </p>
-      {error && (
-        <p className="bg-destructive/10 text-destructive rounded-lg px-3 py-2 text-xs">
-          {error}
-        </p>
-      )}
+      {error && <p className={ERROR_BOX_CLASS}>{error}</p>}
       <button
         type="button"
         onClick={onGenerate}
@@ -1002,11 +998,7 @@ function VideoSection({
 }
 
 function ErrorBlurb({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="bg-destructive/10 text-destructive rounded-lg px-3 py-2 text-sm">
-      {children}
-    </p>
-  );
+  return <p className={cn(ERROR_BOX_CLASS, "text-sm")}>{children}</p>;
 }
 
 // ── Shared bits ───────────────────────────────────────────────────────
