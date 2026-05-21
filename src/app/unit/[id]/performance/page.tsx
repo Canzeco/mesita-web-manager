@@ -57,17 +57,17 @@ export default async function PerformancePage({
                 Conversion funnel
               </p>
               <div className="mt-5 flex flex-col gap-4">
-                {FUNNEL.map((f) => {
-                  const pct = (f.value / maxFunnel) * 100;
+                {FUNNEL.map(({ stage, value }) => {
+                  const pct = (value / maxFunnel) * 100;
                   return (
-                    <div key={f.stage}>
+                    <div key={stage}>
                       <div className="flex items-baseline justify-between">
                         <span className="text-foreground text-[13px]">
-                          {f.stage}
+                          {stage}
                         </span>
                         <span className="text-[12px] tabular-nums">
                           <span className="font-display font-bold">
-                            {f.value.toLocaleString()}
+                            {value.toLocaleString()}
                           </span>
                           <span className="text-muted-foreground ml-1">
                             · {pct >= 1 ? pct.toFixed(0) : pct.toFixed(1)}%
