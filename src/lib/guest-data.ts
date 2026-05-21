@@ -618,7 +618,7 @@ export const COUPONS: SavedItem[] = [
   },
 ];
 
-export const TIERS: {
+export type TierMeta = {
   id: Tier;
   label: string;
   req: string;
@@ -627,7 +627,9 @@ export const TIERS: {
   priceMxn: number;
   cashback: string;
   perk: string;
-}[] = [
+};
+
+export const TIERS: TierMeta[] = [
   // The tier IS the brand — rendered as "Mesita Bronze" / "Mesita Silver"
   // / "Mesita Gold" / "Mesita Diamond" in marketing and subscribe surfaces.
   // The compact `label` here is used inside tight UI (tier badges, table
