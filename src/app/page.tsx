@@ -1,19 +1,28 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowRight, BarChart3, Camera, Search, Star } from "lucide-react";
+import {
+  ArrowRight,
+  BarChart3,
+  Camera,
+  MapPin,
+  Search,
+  Sparkles,
+  Star,
+} from "lucide-react";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { getUnitOverview } from "@/lib/api/unit";
 import { apiGetManagerProfile } from "@/lib/api/manager";
+import { AppHeader } from "@/components/auth/AppHeader";
 
 // Root behaviour:
 //
 //   no session         → render the marketing landing (this page)
 //   not onboarded      → /onboard
-//   no venues          → /add (create first venue)
+//   no venues          → render the venue-less hub (empty state +
+//                        "Add your first venue" CTA → /add).
+//                        Used to redirect → /add, which created an
+//                        infinite "Back to home" loop on /add itself.
 //   venues exist       → /unit/<first venue id>/home
-//
-// The unit shell takes over from there for authenticated users; the
-// landing only renders when there is no session.
 
 export const dynamic = "force-dynamic";
 
@@ -39,7 +48,8 @@ export default async function RootPage() {
       console.error("[root] manager-get-overview:", err);
     }
     const firstVenueId = overview?.venues?.[0]?.id;
-    redirect(firstVenueId ? `/unit/${firstVenueId}/home` : "/add");
+    if (firstVenueId) redirect(`/unit/${firstVenueId}/home`);
+    return <VenuelessHub email={user.email ?? null} />;
   }
 
   return (
@@ -245,6 +255,44 @@ function PriceCard({
         Mechanic: <b className="text-foreground">{mechanicLabel}</b> ·{" "}
         {blurb}
       </p>
+    </div>
+  );
+}
+
+// Authenticated + no venues. The empty home — used to be a redirect
+// to /add (loop) — now an explicit hub with AppHeader (sign-out lives
+// there) and a single CTA to /add. Same shell as the dashboard
+// surfaces in spirit; no sidebar because there's nothing to navigate
+// yet.
+function VenuelessHub({ email }: { email: string | null }) {
+  return (
+    <div className="bg-background min-h-dvh">
+      <AppHeader email={email} venues={[]} />
+      <div className="mx-auto max-w-2xl px-6 py-16">
+        <div className="border-border bg-card-soft flex flex-col items-center gap-5 rounded-[22px] border p-10 text-center">
+          <span className="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-full">
+            <Sparkles className="h-5 w-5" />
+          </span>
+          <div>
+            <h1 className="font-display text-[28px] font-semibold tracking-[-0.02em]">
+              Add your first venue
+            </h1>
+            <p className="text-muted-foreground mt-2 max-w-[44ch] text-sm leading-[1.55]">
+              Mesita lists every venue on the open internet. Claim
+              the one you operate (or create a brand new listing) and
+              your dashboard shows up here.
+            </p>
+          </div>
+          <Link
+            href="/add"
+            className="bg-pink-gradient shadow-glow inline-flex h-12 items-center gap-2 rounded-full px-6 text-sm font-semibold text-white transition hover:brightness-105"
+          >
+            <MapPin className="h-4 w-4" />
+            Add a venue
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

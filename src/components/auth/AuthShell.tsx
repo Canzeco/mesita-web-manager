@@ -4,11 +4,24 @@ import Link from "next/link";
 // the hero gradient, the soft pink glow behind the card, the brandmark,
 // the title + subtitle, then whatever children the page hands in.
 
-export function AuthShell({ children }: { children: React.ReactNode }) {
+export function AuthShell({
+  header,
+  children,
+}: {
+  // Optional top-pinned chrome (used by /onboard, which is
+  // authenticated and benefits from the AppHeader's account menu).
+  // Sign-in / sign-up leave this null — there's no session to surface
+  // and the in-card brandmark is the only nav.
+  header?: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="bg-hero relative grid min-h-dvh place-items-center overflow-hidden px-5 py-10">
-      <SoftGlow />
-      {children}
+    <div className="bg-hero relative flex min-h-dvh flex-col overflow-hidden">
+      {header}
+      <div className="relative grid flex-1 place-items-center px-5 py-10">
+        <SoftGlow />
+        {children}
+      </div>
     </div>
   );
 }

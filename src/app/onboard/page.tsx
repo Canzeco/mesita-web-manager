@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { apiGetManagerProfile } from "@/lib/api/manager";
-import { AuthCard, AuthShell, SignedInChip } from "@/components/auth/AuthShell";
+import { AppHeader } from "@/components/auth/AppHeader";
+import { AuthCard, AuthShell } from "@/components/auth/AuthShell";
 import { ManagerOnboardForm } from "./ManagerOnboardForm";
 
 // Manager onboarding — captures the manager's name after signup.
@@ -12,6 +13,11 @@ import { ManagerOnboardForm } from "./ManagerOnboardForm";
 //   - signed out         → /sign-in (with next=/onboard)
 //   - already onboarded  → /add (skip past us)
 //   - signed in, no name → render the form
+//
+// Renders AppHeader on top so the operator has a visible sign-out
+// path mid-flow — even though they don't have a profile or venues yet,
+// they may have signed in with the wrong Google account and want to
+// switch.
 export const dynamic = "force-dynamic";
 
 export default async function ManagerOnboardPage() {
@@ -29,15 +35,10 @@ export default async function ManagerOnboardPage() {
   }
 
   return (
-    <AuthShell>
+    <AuthShell header={<AppHeader email={user.email ?? null} venues={[]} />}>
       <AuthCard
         title="Welcome to Mesita"
         subtitle="Tell us who you are. You can add your venue right after."
-        chip={
-          user.email ? (
-            <SignedInChip>Signed in as {user.email}</SignedInChip>
-          ) : null
-        }
       >
         <ManagerOnboardForm />
       </AuthCard>
