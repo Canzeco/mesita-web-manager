@@ -690,24 +690,19 @@ function AudienceStat({
   );
 }
 
+const TIER_TONE: Record<Tier, string> = {
+  bronze: "bg-tier-bronze text-white",
+  silver: "bg-tier-silver text-foreground",
+  gold: "bg-tier-gold text-black",
+  diamond: "bg-tier-diamond text-white",
+};
+
 function TierChip({ tier, label }: { tier: Tier; label: string }) {
-  const tone = (() => {
-    switch (tier) {
-      case "bronze":
-        return "bg-tier-bronze text-white";
-      case "silver":
-        return "bg-tier-silver text-foreground";
-      case "gold":
-        return "bg-tier-gold text-black";
-      case "diamond":
-        return "bg-tier-diamond text-white";
-    }
-  })();
   return (
     <span
       className={cn(
         "inline-flex rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase shadow-sm",
-        tone,
+        TIER_TONE[tier],
       )}
     >
       {label}
