@@ -661,23 +661,18 @@ function RecentActivityCard() {
         </span>
       </header>
       <ul className="divide-border mt-3 flex flex-col divide-y">
-        {events.map((e, i) => {
-          const Icon = e.Icon;
-          return (
-            <li key={i} className="flex items-start gap-3 py-2.5">
-              <span className="bg-muted text-foreground mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full">
-                <Icon className="h-3.5 w-3.5" />
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold">{e.title}</p>
-                <p className="text-muted-foreground text-[11px]">{e.detail}</p>
-              </div>
-              <p className="text-muted-foreground shrink-0 text-[11px]">
-                {e.when}
-              </p>
-            </li>
-          );
-        })}
+        {events.map(({ Icon, title, detail, when }, i) => (
+          <li key={i} className="flex items-start gap-3 py-2.5">
+            <span className="bg-muted text-foreground mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full">
+              <Icon className="h-3.5 w-3.5" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold">{title}</p>
+              <p className="text-muted-foreground text-[11px]">{detail}</p>
+            </div>
+            <p className="text-muted-foreground shrink-0 text-[11px]">{when}</p>
+          </li>
+        ))}
       </ul>
     </section>
   );
