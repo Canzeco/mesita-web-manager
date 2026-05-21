@@ -286,9 +286,8 @@ export function CreateUnitForm({ signedInEmail }: { signedInEmail: string }) {
         query.trim().length >= 2 &&
         predictions.length === 0 && (
           <p className="text-muted-foreground px-1 text-xs leading-relaxed">
-            No matches. Try a different spelling, drop the city
-            qualifier, or paste the venue&apos;s exact Google profile
-            name.
+            No matches. Try a different spelling, drop the city qualifier, or
+            paste the venue&apos;s exact Google profile name.
           </p>
         )}
 
@@ -449,10 +448,10 @@ function PendingByMeCard({
         </StatusBadge>
         <VenueIdentity venue={venue} />
         <p className="text-muted-foreground text-sm leading-relaxed">
-          We received your OTP and confirmed it&apos;s correct. A Mesita
-          admin is doing a final review and will grant ownership shortly
-          — you&apos;ll see this venue in your dashboard once they
-          approve. No action needed from you.
+          We received your OTP and confirmed it&apos;s correct. A Mesita admin
+          is doing a final review and will grant ownership shortly — you&apos;ll
+          see this venue in your dashboard once they approve. No action needed
+          from you.
         </p>
       </section>
     );
@@ -465,8 +464,8 @@ function PendingByMeCard({
       </StatusBadge>
       <VenueIdentity venue={venue} />
       <p className="text-muted-foreground text-sm leading-relaxed">
-        Re-submit below if you didn&apos;t pick up — the new request
-        replaces the pending one.
+        Re-submit below if you didn&apos;t pick up — the new request replaces
+        the pending one.
       </p>
       <VerificationForm
         venueId={venue.id}
@@ -489,9 +488,8 @@ function PendingByOtherCard({
       </StatusBadge>
       <VenueIdentity venue={venue} />
       <p className="text-muted-foreground text-sm leading-relaxed">
-        Another operator has a pending claim. Whoever proves ownership
-        first wins — if it&apos;s really your venue, just pick up the
-        phone.
+        Another operator has a pending claim. Whoever proves ownership first
+        wins — if it&apos;s really your venue, just pick up the phone.
       </p>
       <VerificationForm
         venueId={venue.id}
@@ -724,9 +722,8 @@ function VerificationForm({
       />
       {!phoneAvailable && tab === "video" && (
         <p className="text-muted-foreground -mt-1 text-[11px] leading-relaxed">
-          No phone listed on Google for this venue, so phone call
-          verification isn&apos;t available — submit a walkthrough
-          video instead.
+          No phone listed on Google for this venue, so phone call verification
+          isn&apos;t available — submit a walkthrough video instead.
         </p>
       )}
       {tab === "ai_call" ? (
@@ -835,8 +832,8 @@ function PhoneSection({
           <span className="text-foreground font-mono font-semibold">
             {venuePhone ?? "the Google-listed phone"}
           </span>{" "}
-          and read out a 6-digit code. Pick up at the venue and type
-          the code below — all on this page.
+          and read out a 6-digit code. Pick up at the venue and type the code
+          below — all on this page.
         </p>
         <button
           type="button"
@@ -876,17 +873,16 @@ function PhoneSection({
           <span className="text-foreground font-mono font-semibold">
             {venuePhone ?? "the venue"}
           </span>{" "}
-          and read out a 6-digit code. Pick up at the venue and type
-          it below.
+          and read out a 6-digit code. Pick up at the venue and type it below.
         </p>
       </div>
 
       {state.mockCode && (
-        <div className="border-amber-200 bg-amber-50 text-amber-900 flex items-start gap-2 rounded-xl border p-3 text-[12px] leading-relaxed">
+        <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-[12px] leading-relaxed text-amber-900">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           <p>
-            <span className="font-semibold">Mock mode</span> — Twilio
-            isn&apos;t wired yet, so no real call was placed. Type{" "}
+            <span className="font-semibold">Mock mode</span> — Twilio isn&apos;t
+            wired yet, so no real call was placed. Type{" "}
             <span className="font-mono font-bold tracking-widest">
               {state.mockCode}
             </span>{" "}

@@ -618,7 +618,6 @@ export const COUPONS: SavedItem[] = [
   },
 ];
 
-
 export const TIERS: {
   id: Tier;
   label: string;
@@ -666,8 +665,6 @@ export const TIERS: {
     perk: "VIP · private events",
   },
 ];
-
-
 
 export function venueById(id: string): Venue | undefined {
   return VENUES.find((v) => v.id === id);
