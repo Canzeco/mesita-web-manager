@@ -239,12 +239,21 @@ export const TRANSACTIONS: Transaction[] = [
 
 // ── Team (team/page.tsx) ──────────────────────────────────────────────────
 
-export const TEAM = [
+export type TeamMember = {
+  id: string;
+  name: string;
+  role: "Owner" | "Manager";
+  access: "full";
+  avatar: string;
+  lastActive: string;
+};
+
+export const TEAM: TeamMember[] = [
   {
     id: "m-1",
     name: "Iván Solís",
     role: "Owner",
-    access: "full" as const,
+    access: "full",
     avatar:
       "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80&auto=format&fit=crop&crop=faces",
     lastActive: "Now",
@@ -253,14 +262,22 @@ export const TEAM = [
     id: "m-2",
     name: "Marta R.",
     role: "Manager",
-    access: "full" as const,
+    access: "full",
     avatar:
       "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80&auto=format&fit=crop&crop=faces",
     lastActive: "1h ago",
   },
 ];
 
-export const VALIDATORS = [
+export type Validator = {
+  id: string;
+  name: string;
+  role: "Waiter" | "Host";
+  phone: string;
+  lastActive: string;
+};
+
+export const VALIDATORS: Validator[] = [
   {
     id: "w-1",
     name: "Carlos M.",
