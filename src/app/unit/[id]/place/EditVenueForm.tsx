@@ -69,24 +69,29 @@ const STATUS_OPTIONS: {
 
 type Status = "active" | "paused" | "archived";
 
-type LinksState = {
-  website_url: string;
-  instagram_url: string;
-  tiktok_url: string;
-  facebook_url: string;
-  whatsapp_url: string;
-  opentable_url: string;
-  resy_url: string;
-  uber_eats_url: string;
-  rappi_url: string;
-  x_url: string;
-  youtube_url: string;
-  threads_url: string;
-  reddit_url: string;
-  didi_food_url: string;
-  tripadvisor_url: string;
-  google_maps_url: string;
-};
+// Single source of truth for every link/social field on the venue.
+// Used both as the keys of LinksState (form-side strings) and as the
+// payload keys we sweep through nullableUrl() on save.
+const LINK_KEYS = [
+  "website_url",
+  "instagram_url",
+  "tiktok_url",
+  "facebook_url",
+  "whatsapp_url",
+  "opentable_url",
+  "resy_url",
+  "uber_eats_url",
+  "rappi_url",
+  "x_url",
+  "youtube_url",
+  "threads_url",
+  "reddit_url",
+  "didi_food_url",
+  "tripadvisor_url",
+  "google_maps_url",
+] as const;
+
+type LinksState = { [K in (typeof LINK_KEYS)[number]]: string };
 
 function nullableUrl(v: string): string | null {
   const t = v.trim();
@@ -132,24 +137,12 @@ export function EditVenueForm({ venue }: { venue: MyVenue }) {
   const [story, setStory] = useState(venue.story ?? "");
   const [photos, setPhotos] = useState<string[]>(venue.photos ?? []);
   const [newPhotoUrl, setNewPhotoUrl] = useState("");
-  const [links, setLinks] = useState<LinksState>({
-    website_url: venue.website_url ?? "",
-    instagram_url: venue.instagram_url ?? "",
-    tiktok_url: venue.tiktok_url ?? "",
-    facebook_url: venue.facebook_url ?? "",
-    whatsapp_url: venue.whatsapp_url ?? "",
-    opentable_url: venue.opentable_url ?? "",
-    resy_url: venue.resy_url ?? "",
-    uber_eats_url: venue.uber_eats_url ?? "",
-    rappi_url: venue.rappi_url ?? "",
-    x_url: venue.x_url ?? "",
-    youtube_url: venue.youtube_url ?? "",
-    threads_url: venue.threads_url ?? "",
-    reddit_url: venue.reddit_url ?? "",
-    didi_food_url: venue.didi_food_url ?? "",
-    tripadvisor_url: venue.tripadvisor_url ?? "",
-    google_maps_url: venue.google_maps_url ?? "",
-  });
+  const [links, setLinks] = useState<LinksState>(
+    () =>
+      Object.fromEntries(
+        LINK_KEYS.map((k) => [k, venue[k] ?? ""]),
+      ) as LinksState,
+  );
   const setLink = (key: keyof LinksState, value: string) =>
     setLinks((prev) => ({ ...prev, [key]: value }));
   // Email is plain text, not URL-shaped — handled separately so it bypasses
