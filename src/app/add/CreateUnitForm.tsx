@@ -38,6 +38,17 @@ import { cn, errMsg } from "@/lib/utils";
 
 const SEARCH_DEBOUNCE_MS = 220;
 
+// Rolling status messages cycled into the Generate button while
+// manager-create-unit is running. Each is shown for GENERATE_STAGE_MS so
+// the spinner doesn't feel stuck on a single label.
+const GENERATE_STAGE_MS = 6000;
+const GENERATE_STAGES = [
+  "Fetching Google profile…",
+  "Scanning the venue's website…",
+  "Cross-checking social signals…",
+  "Synthesising the catalog entry…",
+];
+
 // Callbacks the parent provides for each terminal outcome of the
 // verification form. The form is self-contained — it owns method,
 // OTP, and video state — but doesn't know the page's routing
@@ -141,18 +152,12 @@ export function CreateUnitForm({ signedInEmail }: { signedInEmail: string }) {
   const onGenerate = () => {
     if (!selected || generatePending) return;
     setGenerateError(null);
-    setGenerateStage("Fetching Google profile…");
-    const stages = [
-      "Fetching Google profile…",
-      "Scanning the venue's website…",
-      "Cross-checking social signals…",
-      "Synthesising the catalog entry…",
-    ];
+    setGenerateStage(GENERATE_STAGES[0]);
     let stageStep = 0;
     const stageInterval = window.setInterval(() => {
-      stageStep = Math.min(stageStep + 1, stages.length - 1);
-      setGenerateStage(stages[stageStep]);
-    }, 6000);
+      stageStep = Math.min(stageStep + 1, GENERATE_STAGES.length - 1);
+      setGenerateStage(GENERATE_STAGES[stageStep]);
+    }, GENERATE_STAGE_MS);
 
     startGenerate(async () => {
       try {
