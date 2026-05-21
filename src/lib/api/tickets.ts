@@ -259,14 +259,27 @@ export async function apiCreateTicket(
   return invokeEF<CreateTicketPayload>(client, "manager-create-ticket", input);
 }
 
+export type MarkPaidTicket = {
+  id: string;
+  status: TicketStatus;
+  paid_at: string | null;
+  cashback_cents: number | null;
+  story_status?: StoryStatus;
+};
+
+export type MarkPaidResult = {
+  ticket: MarkPaidTicket;
+  cashbackCreditedCents: number;
+  cashbackRedeemedCents: number;
+  guestBalanceAfterCents: number | null;
+  alreadyPaid: boolean;
+  awaitingStory: boolean;
+};
+
+// EF response — fields above marked optional get normalised to required
+// defaults before returning so callers don't need to handle undefined.
 type MarkPaidPayload = {
-  ticket: {
-    id: string;
-    status: TicketStatus;
-    paid_at: string | null;
-    cashback_cents: number | null;
-    story_status?: StoryStatus;
-  };
+  ticket: MarkPaidTicket;
   cashbackCreditedCents: number;
   cashbackRedeemedCents?: number;
   guestBalanceAfterCents: number | null;
@@ -277,14 +290,7 @@ type MarkPaidPayload = {
 export async function apiMarkTicketPaid(
   client: SupabaseClient,
   ticketId: string,
-): Promise<{
-  ticket: MarkPaidPayload["ticket"];
-  cashbackCreditedCents: number;
-  cashbackRedeemedCents: number;
-  guestBalanceAfterCents: number | null;
-  alreadyPaid: boolean;
-  awaitingStory: boolean;
-}> {
+): Promise<MarkPaidResult> {
   const data = await invokeEF<MarkPaidPayload>(client, "manager-mark-paid", {
     ticketId,
   });
