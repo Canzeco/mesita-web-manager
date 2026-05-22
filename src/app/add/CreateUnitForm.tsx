@@ -1046,7 +1046,8 @@ function WhatsAppBody({ venue }: { venue: LookupVenue }) {
   return (
     <div className="flex flex-col gap-3">
       <p className="text-muted-foreground text-[13px] leading-relaxed">
-        Send our team a WhatsApp — we&apos;ll verify in person and follow up.
+        Send our team a WhatsApp — we usually reply within minutes, and never
+        more than one business day.
       </p>
       <a
         href={href}
