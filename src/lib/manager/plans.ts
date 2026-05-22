@@ -4,14 +4,15 @@ import type { FiscalType } from "@/components/shared";
 // Subscription catalog used by Promos (picker + label lookup).
 //
 // Three subscriptions, one per DB enum value:
-//   - Free      (plan=free)              · Minimum visibility
-//   - Cashback  (plan=formal_pro,   fiscal=formal)   · Maximum visibility
-//   - Discount  (plan=informal_pro, fiscal=informal) · Priority visibility
+//   - Free      (plan=free)                          · Minimum visibility  · $0
+//   - Discount  (plan=informal_pro, fiscal=informal) · Priority visibility · $500
+//   - Cashback  (plan=formal_pro,   fiscal=formal)   · Maximum visibility  · $1000
 //
-// Cashback and Discount cost the same; the difference is operational
-// (does the venue settle through Mesita?). Visibility ladders by
-// mechanic — Cashback gets Maximum because Mesita captures the wallet
-// flow, Discount caps at Priority.
+// Cashback costs 2× Discount because it captures the wallet flow — Mesita
+// runs the payment, returns part to the guest's wallet, and the venue
+// lands on Maximum visibility on the platform. Discount is the lower-
+// commitment tier: the venue still gets promos and Priority visibility,
+// but Mesita is not in the payment loop.
 
 export type PlanMechanic = "None" | "Cashback" | "Discount";
 export type PlanVisibility = "Minimum" | "Priority" | "Maximum";
@@ -41,7 +42,7 @@ export const SUBSCRIPTIONS: SubscriptionRow[] = [
   {
     id: "cashback",
     label: "Cashback",
-    price: "$500",
+    price: "$1,000",
     cadence: "MX / year",
     tagline: "Card runs through Mesita, returned to the guest's wallet.",
     visibility: "Maximum",
