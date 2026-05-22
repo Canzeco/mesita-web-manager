@@ -50,12 +50,16 @@ const GENERATE_STAGES = [
   "Synthesising the catalog entry…",
 ];
 
-// Mesita ops WhatsApp number (E.164). Direct fallback channel for
-// ownership claims that can't be auto-verified by phone or email.
-// Hardcoded so the "Talk to us" button always works regardless of
-// Supabase env config — the lookup EF still surfaces `methods.manual`
-// but the UI no longer reads it.
+// Mesita ops contact channels. Direct fallback for ownership claims
+// that can't be auto-verified by phone or email. WhatsApp is the
+// LATAM-friendly primary; email is the universal fallback for regions
+// where WhatsApp isn't dominant (US, most of Europe) and also the
+// natural channel when the operator needs to attach proof documents
+// (business license, utility bill, staff photo with signage).
+// Hardcoded so the "Talk to us" buttons always work regardless of
+// Supabase env config.
 const MESITA_OPS_WHATSAPP_E164 = "+524445499597";
+const MESITA_OPS_EMAIL = "hello@mesita.ai";
 
 // Callbacks the parent provides for each terminal outcome of a
 // verification flow. The picker + bodies are self-contained but don't
@@ -423,8 +427,8 @@ function WebListedCard({
       <StatusBadge tone="info">Web listed · no verified owner</StatusBadge>
       <VenueIdentity venue={venue} />
       <p className="text-muted-foreground text-sm leading-relaxed">
-        Prove you own this venue. Phone and email checks land instantly when
-        the code clears — manual takes a short look from our team.
+        Prove you own this venue. Phone and email checks land instantly when the
+        code clears — manual takes a short look from our team.
       </p>
       <MethodsPicker venue={venue} methods={methods} {...callbacks} />
     </section>
@@ -453,10 +457,10 @@ function PendingByMeCard({
         </StatusBadge>
         <VenueIdentity venue={venue} />
         <p className="text-muted-foreground text-sm leading-relaxed">
-          We received your code and confirmed it&apos;s correct. A Mesita
-          admin is doing a final review and will grant ownership shortly —
-          you&apos;ll see this venue in your dashboard once they approve. No
-          action needed from you.
+          We received your code and confirmed it&apos;s correct. A Mesita admin
+          is doing a final review and will grant ownership shortly — you&apos;ll
+          see this venue in your dashboard once they approve. No action needed
+          from you.
         </p>
       </section>
     );
@@ -581,12 +585,15 @@ function ErrorCard({
 
 // ── Methods picker ────────────────────────────────────────────────────
 
-// Three verification paths share the same parent card body. The picker
-// only renders chips for the methods that are actually available — phone
-// when the venue has a Google-listed number, email when a Firecrawl-
-// discovered email is on-domain with the website, and the manual
-// fallback always. A bare listing (no phone, no on-domain email)
-// collapses to the manual body directly with no picker chrome.
+// Three verification paths share the same parent card body. All three
+// chips are always rendered — phone, email, and the manual "Talk to us"
+// fallback — so operators see the full set of supported methods even
+// when this specific venue doesn't expose a Google-listed phone or a
+// Firecrawl-discovered on-domain email. When the auto-method isn't
+// available for the venue, selecting its chip shows a short
+// explanatory body that points to the manual fallback. The picker
+// auto-lands on the first actionable method (phone → email → manual)
+// so a bare listing opens straight on the WhatsApp/email panel.
 
 type MethodKey = "phone" | "email" | "manual";
 
@@ -598,8 +605,6 @@ function MethodsPicker({
   venue: LookupVenue;
   methods: LookupMethods;
 } & VerificationCallbacks) {
-  const bareListing = !methods.phone.available && !methods.email.available;
-
   const initialMethod: MethodKey = methods.phone.available
     ? "phone"
     : methods.email.available
@@ -608,32 +613,23 @@ function MethodsPicker({
 
   const [method, setMethod] = useState<MethodKey>(initialMethod);
 
-  if (bareListing) {
-    // Skip the picker chrome entirely — there's only one option to take.
-    return <WhatsAppBody venue={venue} />;
-  }
-
   return (
     <div className="flex flex-col gap-4">
-      <div className="bg-muted/70 grid grid-flow-col auto-cols-fr gap-1 rounded-2xl p-1">
-        {methods.phone.available && (
-          <MethodChip
-            active={method === "phone"}
-            onClick={() => setMethod("phone")}
-          >
-            <Phone className="h-4 w-4" />
-            Phone
-          </MethodChip>
-        )}
-        {methods.email.available && (
-          <MethodChip
-            active={method === "email"}
-            onClick={() => setMethod("email")}
-          >
-            <Mail className="h-4 w-4" />
-            Email
-          </MethodChip>
-        )}
+      <div className="bg-muted/70 grid auto-cols-fr grid-flow-col gap-1 rounded-2xl p-1">
+        <MethodChip
+          active={method === "phone"}
+          onClick={() => setMethod("phone")}
+        >
+          <Phone className="h-4 w-4" />
+          Phone
+        </MethodChip>
+        <MethodChip
+          active={method === "email"}
+          onClick={() => setMethod("email")}
+        >
+          <Mail className="h-4 w-4" />
+          Email
+        </MethodChip>
         <MethodChip
           active={method === "manual"}
           onClick={() => setMethod("manual")}
@@ -643,13 +639,44 @@ function MethodsPicker({
         </MethodChip>
       </div>
 
-      {method === "phone" && (
-        <PhoneBody venue={venue} methods={methods} {...callbacks} />
-      )}
-      {method === "email" && (
-        <EmailBody venue={venue} methods={methods} {...callbacks} />
-      )}
+      {method === "phone" &&
+        (methods.phone.available ? (
+          <PhoneBody venue={venue} methods={methods} {...callbacks} />
+        ) : (
+          <MethodUnavailableBody method="phone" />
+        ))}
+      {method === "email" &&
+        (methods.email.available ? (
+          <EmailBody venue={venue} methods={methods} {...callbacks} />
+        ) : (
+          <MethodUnavailableBody method="email" />
+        ))}
       {method === "manual" && <WhatsAppBody venue={venue} />}
+    </div>
+  );
+}
+
+// Shown when the operator selects an auto-verify chip (phone or email)
+// that isn't available for this specific venue — e.g. the GMB profile
+// has no public phone, or no Firecrawl-discovered on-domain email.
+// Keeps the chip visible so operators see the full supported set, but
+// makes the missing-data state clear and points to the manual path.
+function MethodUnavailableBody({ method }: { method: "phone" | "email" }) {
+  const Icon = method === "phone" ? Phone : Mail;
+  const what =
+    method === "phone"
+      ? "a public phone number on Google"
+      : "a verified email on the venue's website";
+  const label = method === "phone" ? "phone" : "email";
+  return (
+    <div className="border-border bg-muted/30 flex items-start gap-3 rounded-2xl border p-4">
+      <Icon className="text-muted-foreground mt-0.5 h-4 w-4 shrink-0" />
+      <p className="text-muted-foreground text-[13px] leading-relaxed">
+        We couldn&apos;t find {what} for this venue, so the instant {label}{" "}
+        check isn&apos;t available here. Use{" "}
+        <span className="text-foreground font-medium">Talk to us</span> instead
+        — our team verifies ownership manually within minutes.
+      </p>
     </div>
   );
 }
@@ -765,8 +792,8 @@ function PhoneBody({
           <span className="text-foreground font-mono font-semibold">
             {phoneDisplay}
           </span>{" "}
-          and read out a 6-digit code. Pick up at the venue and type it in
-          right here.
+          and read out a 6-digit code. Pick up at the venue and type it in right
+          here.
         </p>
         <button
           type="button"
@@ -1032,31 +1059,51 @@ function EmailBody({
   );
 }
 
-// ── WhatsApp fallback body ────────────────────────────────────────────
+// ── Talk-to-us fallback body ──────────────────────────────────────────
 
-// Always-available manual path. Opens a wa.me deep-link with a
-// prefilled claim message to Mesita ops. No DB row, no admin queue —
-// ops handles the conversation directly. Phone/email auto-verify
-// remain the happy paths; this is the fallback when neither is
-// available or when the operator wants a human.
+// Always-available manual path. Opens a wa.me deep-link OR a mailto:
+// with a prefilled claim message to Mesita ops. No DB row, no admin
+// queue — ops handles the conversation directly. Phone/email
+// auto-verify remain the happy paths; this is the fallback when
+// neither is available or when the operator wants a human.
+//
+// WhatsApp is the primary CTA (LATAM-friendly, where most operators
+// live), and email is the universal secondary — better for regions
+// where WhatsApp isn't dominant (US, most of Europe) and also the
+// natural channel when ops asks the operator to attach proof of
+// ownership (business license, utility bill, staff photo with signage).
 function WhatsAppBody({ venue }: { venue: LookupVenue }) {
   const waNumber = MESITA_OPS_WHATSAPP_E164.replace(/[^\d]/g, "");
-  const message = `Hi Mesita — I'd like to claim "${venue.name}" on Mesita. Venue ID: ${venue.id}.`;
-  const href = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+  const waMessage = `Hi Mesita — I'd like to claim "${venue.name}" on Mesita. Venue ID: ${venue.id}.`;
+  const waHref = `https://wa.me/${waNumber}?text=${encodeURIComponent(waMessage)}`;
+
+  const emailSubject = `Claim "${venue.name}" on Mesita`;
+  const emailBody = `Hi Mesita team,\n\nI'd like to claim "${venue.name}" on Mesita.\n\nVenue ID: ${venue.id}\n\nHappy to share proof of ownership (business license, utility bill, or a staff photo with signage) if helpful.\n\nThanks,`;
+  const mailHref = `mailto:${MESITA_OPS_EMAIL}?subject=${encodeURIComponent(
+    emailSubject,
+  )}&body=${encodeURIComponent(emailBody)}`;
+
   return (
     <div className="flex flex-col gap-3">
       <p className="text-muted-foreground text-[13px] leading-relaxed">
-        Send our team a WhatsApp — we usually reply within minutes, and never
-        more than one business day.
+        Reach our team and we&apos;ll verify ownership manually — we usually
+        reply within minutes, and never more than one business day.
       </p>
       <a
-        href={href}
+        href={waHref}
         target="_blank"
         rel="noreferrer"
         className="bg-whatsapp flex h-14 items-center justify-center gap-2 rounded-full text-base font-semibold text-white transition hover:opacity-90"
       >
         <MessageCircle className="h-5 w-5" />
         Talk to us on WhatsApp
+      </a>
+      <a
+        href={mailHref}
+        className="border-border bg-card text-foreground hover:bg-muted/50 flex h-12 items-center justify-center gap-2 rounded-full border text-sm font-semibold transition"
+      >
+        <Mail className="h-4 w-4" />
+        Or email {MESITA_OPS_EMAIL}
       </a>
     </div>
   );
