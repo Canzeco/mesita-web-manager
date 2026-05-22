@@ -150,9 +150,8 @@ export function PromosClient({ venue }: { venue: MyVenue }) {
         {error && <p className={ERROR_BOX_CLASS}>{error}</p>}
         {isFree && (
           <p className="text-muted-foreground text-xs">
-            On <span className="text-foreground font-semibold">Free</span> your
-            promos save but won&apos;t go live until you pick Cashback or
-            Discount.
+            On <span className="text-foreground font-semibold">Free</span> rates
+            are locked to 0% — pick Discounts or Cashbacks to set them.
           </p>
         )}
       </Section>
@@ -162,10 +161,10 @@ export function PromosClient({ venue }: { venue: MyVenue }) {
         enabled={basicEnabled}
         onEnabledChange={handleBasicToggle}
       >
-        <WelcomeRow />
+        <WelcomeRow disabled={isFree} />
         <div className="flex flex-col gap-1.5">
           {TIERS.map((t) => (
-            <TierRow key={t.id} tier={t} />
+            <TierRow key={t.id} tier={t} disabled={isFree} />
           ))}
         </div>
       </Section>
@@ -332,7 +331,7 @@ function SubscriptionCard({
 
 // ─── Welcome row + Tier rows ──────────────────────────────────────────────
 
-function WelcomeRow() {
+function WelcomeRow({ disabled }: { disabled: boolean }) {
   const [rate, setRate] = useState<RateChoice>(20);
   return (
     <PromoRow
@@ -342,23 +341,25 @@ function WelcomeRow() {
         </span>
       }
       sub="First visit"
-      rate={rate}
+      rate={disabled ? 0 : rate}
       onRate={setRate}
+      disabled={disabled}
       audience={12_480}
       audienceLabel="Nearby"
     />
   );
 }
 
-function TierRow({ tier }: { tier: TierMeta }) {
+function TierRow({ tier, disabled }: { tier: TierMeta; disabled: boolean }) {
   const initial: RateChoice = (RATE_CHOICES.find((r) => r >= tier.defaultRate) ?? 50) as RateChoice;
   const [rate, setRate] = useState<RateChoice>(initial);
   return (
     <PromoRow
       chip={<TierChip tier={tier.id} label={tier.label} />}
       sub={tier.visitRange}
-      rate={rate}
+      rate={disabled ? 0 : rate}
       onRate={setRate}
+      disabled={disabled}
       audience={tier.onMesita}
       audienceLabel="On Mesita"
     />
@@ -370,6 +371,7 @@ function PromoRow({
   sub,
   rate,
   onRate,
+  disabled,
   audience,
   audienceLabel,
 }: {
@@ -377,6 +379,7 @@ function PromoRow({
   sub: string;
   rate: RateChoice;
   onRate: (next: RateChoice) => void;
+  disabled: boolean;
   audience: number;
   audienceLabel: string;
 }) {
@@ -386,7 +389,7 @@ function PromoRow({
         {chip}
         <span className="text-muted-foreground text-[10px]">{sub}</span>
       </div>
-      <RatePicker rate={rate} onChange={onRate} />
+      <RatePicker rate={rate} onChange={onRate} disabled={disabled} />
       <div className="text-right">
         <p className="font-display text-sm font-bold tabular-nums leading-none">
           {audience.toLocaleString()}
@@ -402,12 +405,14 @@ function PromoRow({
 function RatePicker({
   rate,
   onChange,
+  disabled,
 }: {
   rate: RateChoice;
   onChange: (next: RateChoice) => void;
+  disabled?: boolean;
 }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className={cn("flex items-center gap-2", disabled && "opacity-60")}>
       <span className="font-display text-primary text-2xl font-bold tabular-nums leading-none">
         {rate}
         <span className="text-base font-semibold">%</span>
@@ -418,11 +423,13 @@ function RatePicker({
             key={c}
             type="button"
             onClick={() => onChange(c)}
+            disabled={disabled}
             className={cn(
               "rounded-full px-2 py-0.5 text-[10px] font-semibold transition",
               c === rate
                 ? "bg-pink-gradient text-white"
                 : "border-border bg-background text-muted-foreground hover:text-foreground border",
+              disabled && "cursor-not-allowed hover:text-muted-foreground",
             )}
           >
             {c}
