@@ -95,29 +95,6 @@ export function PromosClient({ venue }: { venue: MyVenue }) {
     });
   };
 
-  const [basicEnabled, setBasicEnabled] = useState(venue.segmentation_basic_enabled);
-  const [advancedEnabled, setAdvancedEnabled] = useState(venue.segmentation_advanced_enabled);
-  const writeToggle = (
-    field: "segmentation_basic_enabled" | "segmentation_advanced_enabled",
-    next: boolean,
-    rollback: () => void,
-  ) => {
-    apiUpdateVenue(supabase, { id: venue.id, [field]: next })
-      .then(() => router.refresh())
-      .catch((err) => {
-        rollback();
-        setError(errMsg(err, "Couldn't save the toggle."));
-      });
-  };
-  const handleBasicToggle = (next: boolean) => {
-    setBasicEnabled(next);
-    writeToggle("segmentation_basic_enabled", next, () => setBasicEnabled(!next));
-  };
-  const handleAdvancedToggle = (next: boolean) => {
-    setAdvancedEnabled(next);
-    writeToggle("segmentation_advanced_enabled", next, () => setAdvancedEnabled(!next));
-  };
-
   const isFree = currentSub === "free";
 
   return (
@@ -156,11 +133,7 @@ export function PromosClient({ venue }: { venue: MyVenue }) {
         )}
       </Section>
 
-      <Section
-        title="Promos"
-        enabled={basicEnabled}
-        onEnabledChange={handleBasicToggle}
-      >
+      <Section title="Promos">
         <WelcomeRow disabled={isFree} />
         <div className="flex flex-col gap-1.5">
           {TIERS.map((t) => (
@@ -169,11 +142,7 @@ export function PromosClient({ venue }: { venue: MyVenue }) {
         </div>
       </Section>
 
-      <Section
-        title="Advanced"
-        enabled={advancedEnabled}
-        onEnabledChange={handleAdvancedToggle}
-      >
+      <Section title="Advanced">
         <AdvancedComingSoon />
       </Section>
     </div>
@@ -184,12 +153,12 @@ export function PromosClient({ venue }: { venue: MyVenue }) {
 
 function VisibilityRail({ plan }: { plan: Parameters<typeof visibilityForPlan>[0] }) {
   const current = visibilityForPlan(plan);
-  const levels: { label: PlanVisibility | string; soon?: boolean; real?: PlanVisibility }[] = [
-    { label: "Minimum", real: "Minimum" },
-    { label: "Priority", real: "Priority" },
-    { label: "Maximum", real: "Maximum" },
-    { label: "Featured", soon: true },
-    { label: "Spotlight", soon: true },
+  const levels: { label: string; soon?: boolean; real?: PlanVisibility }[] = [
+    { label: "Low", real: "Low" },
+    { label: "Medium", real: "Medium" },
+    { label: "High", real: "High" },
+    { label: "Extra high", soon: true },
+    { label: "Max", soon: true },
   ];
   const currentIdx = levels.findIndex((l) => l.real === current);
 
@@ -473,67 +442,21 @@ function AdvancedComingSoon() {
   );
 }
 
-// ─── Section card + toggle switch ─────────────────────────────────────────
+// ─── Section card ─────────────────────────────────────────────────────────
 
 function Section({
   title,
-  enabled,
-  onEnabledChange,
   children,
 }: {
   title: string;
-  enabled?: boolean;
-  onEnabledChange?: (next: boolean) => void;
   children: React.ReactNode;
 }) {
-  const hasToggle = onEnabledChange !== undefined;
-  const showChildren = !hasToggle || enabled !== false;
   return (
     <section className="border-border bg-card flex flex-col gap-3 rounded-2xl border p-4">
-      <div className="flex items-center justify-between gap-3">
-        <h3 className="font-display text-sm font-semibold tracking-tight">
-          {title}
-        </h3>
-        {hasToggle && (
-          <Switch
-            checked={enabled ?? false}
-            onCheckedChange={onEnabledChange}
-            label={`Enable ${title.toLowerCase()}`}
-          />
-        )}
-      </div>
-      {showChildren && children}
+      <h3 className="font-display text-sm font-semibold tracking-tight">
+        {title}
+      </h3>
+      {children}
     </section>
-  );
-}
-
-function Switch({
-  checked,
-  onCheckedChange,
-  label,
-}: {
-  checked: boolean;
-  onCheckedChange: (next: boolean) => void;
-  label: string;
-}) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      aria-label={label}
-      onClick={() => onCheckedChange(!checked)}
-      className={cn(
-        "relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors",
-        checked ? "bg-pink-gradient" : "bg-muted",
-      )}
-    >
-      <span
-        className={cn(
-          "inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition",
-          checked ? "translate-x-5" : "translate-x-1",
-        )}
-      />
-    </button>
   );
 }
