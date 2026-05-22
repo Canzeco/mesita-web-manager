@@ -27,6 +27,10 @@ export type SubscriptionRow = {
   cadence: string;
   tagline: string;
   visibility: PlanVisibility;
+  // Rough setup time the manager should expect. Discount is just a coupon
+  // workflow (no integration); Cashback requires connecting a business so
+  // Mesita can settle the payment.
+  setup?: string;
   featured?: boolean;
 };
 
@@ -46,6 +50,7 @@ export const SUBSCRIPTIONS: SubscriptionRow[] = [
     cadence: "MX / year",
     tagline: "Card runs through Mesita, returned to the guest's wallet.",
     visibility: "Maximum",
+    setup: "10 min · connect business",
     featured: true,
   },
   {
@@ -55,6 +60,7 @@ export const SUBSCRIPTIONS: SubscriptionRow[] = [
     cadence: "MX / year",
     tagline: "Guest shows the coupon, you discount the bill.",
     visibility: "Priority",
+    setup: "1 min",
   },
 ];
 
