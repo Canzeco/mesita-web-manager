@@ -1114,9 +1114,9 @@ function WhatsAppBody({ venue }: { venue: LookupVenue }) {
       </a>
       <a
         href={mailHref}
-        className="border-border bg-card text-foreground hover:bg-muted/50 flex h-14 items-center justify-center gap-2 rounded-full border text-base font-semibold transition"
+        className="border-border bg-card text-foreground hover:bg-muted/50 flex h-12 items-center justify-center gap-2 rounded-full border text-sm font-semibold transition"
       >
-        <Mail className="h-5 w-5" />
+        <Mail className="h-4 w-4" />
         Email {MESITA_OPS_EMAIL}
       </a>
     </div>
