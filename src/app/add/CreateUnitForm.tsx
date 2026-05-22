@@ -427,8 +427,8 @@ function WebListedCard({
       <StatusBadge tone="info">Web listed · no verified owner</StatusBadge>
       <VenueIdentity venue={venue} />
       <p className="text-muted-foreground text-sm leading-relaxed">
-        Prove you own this venue. Phone and email checks land instantly when the
-        code clears — manual takes a short look from our team.
+        Prove you own this venue. Phone and email codes land instantly; Talk to
+        us is the manual path when neither works for this listing.
       </p>
       <MethodsPicker venue={venue} methods={methods} {...callbacks} />
     </section>
@@ -618,6 +618,7 @@ function MethodsPicker({
       <div className="bg-muted/70 grid auto-cols-fr grid-flow-col gap-1 rounded-2xl p-1">
         <MethodChip
           active={method === "phone"}
+          unavailable={!methods.phone.available}
           onClick={() => setMethod("phone")}
         >
           <Phone className="h-4 w-4" />
@@ -625,6 +626,7 @@ function MethodsPicker({
         </MethodChip>
         <MethodChip
           active={method === "email"}
+          unavailable={!methods.email.available}
           onClick={() => setMethod("email")}
         >
           <Mail className="h-4 w-4" />
@@ -663,30 +665,41 @@ function MethodsPicker({
 // makes the missing-data state clear and points to the manual path.
 function MethodUnavailableBody({ method }: { method: "phone" | "email" }) {
   const Icon = method === "phone" ? Phone : Mail;
+  const title =
+    method === "phone" ? "Phone check unavailable" : "Email check unavailable";
   const what =
     method === "phone"
       ? "a public phone number on Google"
       : "a verified email on the venue's website";
-  const label = method === "phone" ? "phone" : "email";
   return (
     <div className="border-border bg-muted/30 flex items-start gap-3 rounded-2xl border p-4">
-      <Icon className="text-muted-foreground mt-0.5 h-4 w-4 shrink-0" />
-      <p className="text-muted-foreground text-[13px] leading-relaxed">
-        We couldn&apos;t find {what} for this venue, so the instant {label}{" "}
-        check isn&apos;t available here. Use{" "}
-        <span className="text-foreground font-medium">Talk to us</span> instead
-        — our team verifies ownership manually within minutes.
-      </p>
+      <span className="bg-muted text-muted-foreground mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full">
+        <Icon className="h-4 w-4" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="text-foreground text-[13px] font-semibold">{title}</p>
+        <p className="text-muted-foreground mt-1 text-[12.5px] leading-relaxed">
+          We couldn&apos;t find {what} for this venue. Use{" "}
+          <span className="text-foreground font-medium">Talk to us</span> —
+          we&apos;ll verify ownership manually within minutes.
+        </p>
+      </div>
     </div>
   );
 }
 
 function MethodChip({
   active,
+  unavailable,
   onClick,
   children,
 }: {
   active: boolean;
+  // Renders the chip as a dimmed glyph when the auto-method isn't
+  // available for the venue. The chip still clicks through so the
+  // MethodUnavailableBody can explain — we just want the picker row to
+  // signal "this one's not applicable here" at a glance.
+  unavailable?: boolean;
   onClick: () => void;
   children: React.ReactNode;
 }) {
@@ -700,6 +713,7 @@ function MethodChip({
         active
           ? "bg-card text-foreground ring-foreground/5 shadow-md ring-1"
           : "text-muted-foreground hover:text-foreground",
+        unavailable && !active && "opacity-55",
       )}
     >
       {children}
@@ -1103,7 +1117,7 @@ function WhatsAppBody({ venue }: { venue: LookupVenue }) {
         className="border-border bg-card text-foreground hover:bg-muted/50 flex h-12 items-center justify-center gap-2 rounded-full border text-sm font-semibold transition"
       >
         <Mail className="h-4 w-4" />
-        Or email {MESITA_OPS_EMAIL}
+        Email {MESITA_OPS_EMAIL}
       </a>
     </div>
   );
