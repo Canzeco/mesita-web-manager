@@ -291,7 +291,7 @@ function SubscriptionCard({
           Recommended
         </Badge>
       )}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 pr-16">
         {Icon && (
           <span
             className={cn(
@@ -302,7 +302,7 @@ function SubscriptionCard({
             <Icon className="h-3.5 w-3.5" />
           </span>
         )}
-        <span className="font-display text-xl font-semibold tracking-tight">
+        <span className="font-display min-w-0 truncate text-base font-semibold tracking-tight">
           {label}
         </span>
       </div>

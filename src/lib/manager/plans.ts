@@ -4,14 +4,14 @@ import type { FiscalType } from "@/components/shared";
 // Subscription catalog used by Promos (picker + label lookup).
 //
 // Three subscriptions, one per DB enum value:
-//   - Free      (plan=free)                          · Minimum visibility  · $0
-//   - Discount  (plan=informal_pro, fiscal=informal) · Priority visibility · $500
-//   - Cashback  (plan=formal_pro,   fiscal=formal)   · Maximum visibility  · $1000
+//   - "Free without promos"  (plan=free)                          · Minimum  · $0
+//   - "Pro with Discounts"   (plan=informal_pro, fiscal=informal) · Priority · $500
+//   - "Pro with Cashbacks"   (plan=formal_pro,   fiscal=formal)   · Maximum  · $1000
 //
-// Cashback costs 2× Discount because it captures the wallet flow — Mesita
-// runs the payment, returns part to the guest's wallet, and the venue
-// lands on Maximum visibility on the platform. Discount is the lower-
-// commitment tier: the venue still gets promos and Priority visibility,
+// Pro with Cashbacks costs 2× Pro with Discounts because it captures the
+// wallet flow — Mesita runs the payment, returns part to the guest's
+// wallet, and the venue lands on Maximum visibility. Pro with Discounts
+// is the lower-commitment tier: same promo tooling, Priority visibility,
 // but Mesita is not in the payment loop.
 
 export type PlanMechanic = "None" | "Cashback" | "Discount";
@@ -37,7 +37,7 @@ export type SubscriptionRow = {
 export const SUBSCRIPTIONS: SubscriptionRow[] = [
   {
     id: "free",
-    label: "Free",
+    label: "Free without promos",
     price: "$0",
     cadence: "MX / year",
     tagline: "Listed on Mesita.",
@@ -45,7 +45,7 @@ export const SUBSCRIPTIONS: SubscriptionRow[] = [
   },
   {
     id: "cashback",
-    label: "Cashback",
+    label: "Pro with Cashbacks",
     price: "$1,000",
     cadence: "MX / year",
     tagline: "Card runs through Mesita, returned to the guest's wallet.",
@@ -55,7 +55,7 @@ export const SUBSCRIPTIONS: SubscriptionRow[] = [
   },
   {
     id: "discount",
-    label: "Discount",
+    label: "Pro with Discounts",
     price: "$500",
     cadence: "MX / year",
     tagline: "Guest shows the coupon, you discount the bill.",
