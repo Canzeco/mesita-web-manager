@@ -32,7 +32,7 @@ import {
   apiRemoveMember,
   apiTestWaiterChannel,
   apiUpdateMemberRole,
-  type ManagerRole,
+  type BusinessRole,
   type RemoveKind,
   type TeamSnapshot,
 } from "@/lib/api/team";
@@ -40,13 +40,13 @@ import {
 // "manager" is the legacy DB enum value — surfaced as "Editor" in the
 // UI because that's how the user labels read/write members on the Team
 // page.
-const ROLE_LABEL: Record<ManagerRole, string> = {
+const ROLE_LABEL: Record<BusinessRole, string> = {
   owner: "Owner",
   manager: "Editor",
   viewer: "Viewer",
 };
 
-const ROLE_CHOICES: ManagerRole[] = ["owner", "manager", "viewer"];
+const ROLE_CHOICES: BusinessRole[] = ["owner", "manager", "viewer"];
 
 type InviteOpen = null | "manager" | "waiter";
 
@@ -101,7 +101,7 @@ export function TeamClient({
     }
   }
 
-  const handleInviteManager = (email: string, role: ManagerRole) =>
+  const handleInviteManager = (email: string, role: BusinessRole) =>
     runAction(
       "invite-manager",
       async () => {
@@ -133,8 +133,8 @@ export function TeamClient({
 
   const handleChangeRole = (
     memberId: string,
-    role: ManagerRole,
-    currentRole: ManagerRole,
+    role: BusinessRole,
+    currentRole: BusinessRole,
     name: string,
   ) => {
     if (role === currentRole) return;
@@ -244,7 +244,7 @@ export function TeamClient({
                   </p>
                 </div>
                 <RoleSelect
-                  role={(m.role as ManagerRole) ?? "manager"}
+                  role={(m.role as BusinessRole) ?? "manager"}
                   disabled={
                     !isOwner ||
                     busy === `role-${m.memberId}` ||
@@ -254,7 +254,7 @@ export function TeamClient({
                     handleChangeRole(
                       m.memberId,
                       r,
-                      (m.role as ManagerRole) ?? "manager",
+                      (m.role as BusinessRole) ?? "manager",
                       m.fullName ?? m.email ?? "this manager",
                     )
                   }
@@ -287,7 +287,7 @@ export function TeamClient({
                 key={inv.id}
                 icon={<Mail className="text-muted-foreground h-3.5 w-3.5" />}
                 title={inv.email}
-                subtitle={`Invited as ${ROLE_LABEL[(inv.role as ManagerRole) ?? "manager"]} · expires ${formatRelative(inv.expiresAt)}`}
+                subtitle={`Invited as ${ROLE_LABEL[(inv.role as BusinessRole) ?? "manager"]} · expires ${formatRelative(inv.expiresAt)}`}
               >
                 <CopyButton
                   text={buildAcceptUrl(inv.token)}
@@ -488,10 +488,10 @@ function ManagerInviteForm({
   onSubmit,
 }: {
   busy: boolean;
-  onSubmit: (email: string, role: ManagerRole) => void | Promise<void>;
+  onSubmit: (email: string, role: BusinessRole) => void | Promise<void>;
 }) {
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<ManagerRole>("manager");
+  const [role, setRole] = useState<BusinessRole>("manager");
 
   return (
     <form
@@ -517,7 +517,7 @@ function ManagerInviteForm({
       </div>
       <select
         value={role}
-        onChange={(e) => setRole(e.target.value as ManagerRole)}
+        onChange={(e) => setRole(e.target.value as BusinessRole)}
         className="border-border bg-background w-full rounded-full border px-3 py-2 text-[13px] outline-none sm:w-auto"
       >
         {ROLE_CHOICES.map((r) => (
@@ -615,15 +615,15 @@ function RoleSelect({
   disabled,
   onChange,
 }: {
-  role: ManagerRole;
+  role: BusinessRole;
   disabled: boolean;
-  onChange: (r: ManagerRole) => void;
+  onChange: (r: BusinessRole) => void;
 }) {
   return (
     <select
       value={role}
       disabled={disabled}
-      onChange={(e) => onChange(e.target.value as ManagerRole)}
+      onChange={(e) => onChange(e.target.value as BusinessRole)}
       className="border-border bg-background text-foreground hidden rounded-full border px-2.5 py-1 text-[11px] font-medium disabled:cursor-not-allowed disabled:opacity-60 sm:block"
     >
       {ROLE_CHOICES.map((r) => (

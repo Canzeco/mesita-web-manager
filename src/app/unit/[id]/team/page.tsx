@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import { Topbar } from "@/components/manager/Topbar";
-import { PageErrorState } from "@/components/manager/PageErrorState";
+import { Topbar } from "@/components/business/Topbar";
+import { PageErrorState } from "@/components/business/PageErrorState";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { apiListTeam, type TeamSnapshot } from "@/lib/api/team";
 import { errMsg } from "@/lib/utils";

@@ -8,7 +8,7 @@ import { useBrowserSupabase } from "@/lib/supabase/browser";
 import { apiAcceptManagerInvite } from "@/lib/api/team";
 import { errMsg } from "@/lib/utils";
 
-// Manager-side accept page. The waiter accept flow runs from WhatsApp /
+// Business-side accept page. The waiter accept flow runs from WhatsApp /
 // SMS via staff-accept-invite and never lands here.
 //
 // Two preconditions: (1) a `token` query param, (2) a signed-in
