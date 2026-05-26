@@ -6,12 +6,12 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { invokeEF } from "./_invoke";
 
-// venue_members.role DB enum — kept verbatim ("manager" is the legacy
-// editor role inside a venue, distinct from the now-renamed "business"
-// app role).
-export type BusinessRole = "owner" | "manager" | "viewer";
+// venue_members.role DB enum — per-venue tier (distinct from the
+// platform-level "business" app role). Migration 0025 renamed
+// 'manager' → 'editor'.
+export type BusinessRole = "owner" | "editor" | "viewer";
 
-export type TeamManager = {
+export type TeamEditor = {
   memberId: string;
   userId: string;
   role: BusinessRole | string;
@@ -26,7 +26,7 @@ export type TeamWaiter = {
   createdAt: string;
 };
 
-export type PendingManagerInvite = {
+export type PendingEditorInvite = {
   id: string;
   email: string;
   role: BusinessRole | string;
@@ -49,11 +49,15 @@ export type PendingWaiterInvite = {
 // owner-level UI affordances.
 export type CallerRole = BusinessRole | "staff" | "super_admin";
 
+// Note on field naming: the EF returns `businesses` / `pendingBusinessInvites`
+// because those rows are joined from the `businesses` (platform-account)
+// table. The team UI labels them as "Editors" — that's the per-venue tier
+// (member_role) name, distinct from the source table name.
 export type TeamSnapshot = {
   myRole: CallerRole | null;
-  managers: TeamManager[];
+  businesses: TeamEditor[];
   waiters: TeamWaiter[];
-  pendingManagerInvites: PendingManagerInvite[];
+  pendingBusinessInvites: PendingEditorInvite[];
   pendingWaiterInvites: PendingWaiterInvite[];
 };
 
@@ -66,7 +70,7 @@ export async function apiListTeam(
   });
 }
 
-export type InviteManagerResult =
+export type InviteEditorResult =
   | {
       mode: "linked";
       memberId: string;
@@ -84,7 +88,7 @@ export type InviteManagerResult =
       emailError: string | null;
     };
 
-export async function apiInviteManager(
+export async function apiInviteEditor(
   client: SupabaseClient,
   input: {
     venueId: string;
@@ -92,8 +96,8 @@ export async function apiInviteManager(
     role: BusinessRole;
     redirectBase?: string;
   },
-): Promise<InviteManagerResult> {
-  return await invokeEF<InviteManagerResult>(
+): Promise<InviteEditorResult> {
+  return await invokeEF<InviteEditorResult>(
     client,
     "business-invite-business",
     input,
@@ -137,7 +141,7 @@ export async function apiUpdateMemberRole(
   );
 }
 
-export type RemoveKind = "manager" | "waiter" | "mgrInvite" | "waiterInvite";
+export type RemoveKind = "editor" | "waiter" | "editorInvite" | "waiterInvite";
 
 export async function apiRemoveMember(
   client: SupabaseClient,
@@ -169,7 +173,7 @@ export async function apiTestWaiterChannel(
   );
 }
 
-export async function apiAcceptManagerInvite(
+export async function apiAcceptEditorInvite(
   client: SupabaseClient,
   token: string,
 ): Promise<{ venueId: string; role: BusinessRole }> {

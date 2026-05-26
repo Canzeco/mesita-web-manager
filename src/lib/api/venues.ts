@@ -103,7 +103,7 @@ export type Venue = {
 };
 
 export type MyVenue = Venue & {
-  my_role: "owner" | "manager" | "staff";
+  my_role: "owner" | "editor" | "staff";
   updated_at?: string;
 };
 
